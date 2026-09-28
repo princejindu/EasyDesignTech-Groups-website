@@ -11,9 +11,9 @@ import { SocialProof } from "@/components/social-proof";
 
 const services = [
   { number: "01", name: "Web and app development", detail: "Thoughtful websites, useful platforms and mobile experiences built to turn a bold idea into something people love to use.", features: ["Websites and commerce", "Web apps and portals", "Mobile product design"], icon: Braces, id: "web-apps", href: "/services/web-apps", image: "/service-devices.webp" },
-  { number: "02", name: "Branding and design", detail: "A brand people recognise at a glance, carried through identity, graphics, print and every important touchpoint.", features: ["Identity systems", "Graphic and print design", "Campaign creative"], icon: Layers3, id: "branding", href: "/services#branding", image: "" },
+  { number: "02", name: "Branding and design", detail: "A brand people recognise at a glance, carried through identity, graphics, print and every important touchpoint.", features: ["Identity systems", "Graphic and print design", "Campaign creative"], icon: Layers3, id: "branding", href: "/services#branding", image: "/service-branding.webp" },
   { number: "03", name: "Social media and content", detail: "Content with a point of view, from social campaigns and account care to striking AI assisted video and motion.", features: ["Social strategy", "AI video and reels", "Content production"], icon: Sparkles, id: "social", href: "/services/social-content", image: "/service-content.webp" },
-  { number: "04", name: "AI automation and data", detail: "Smarter workflows, clearer dashboards and better connected customer journeys that make everyday work easier.", features: ["AI workflows", "Dashboards", "Customer systems"], icon: Compass, id: "automation", href: "/services#automation", image: "" },
+  { number: "04", name: "AI automation and data", detail: "Smarter workflows, clearer dashboards and better connected customer journeys that make everyday work easier.", features: ["AI workflows", "Dashboards", "Customer systems"], icon: Compass, id: "automation", href: "/services#automation", image: "/service-systems.webp" },
 ];
 
 const ventures = [
@@ -78,7 +78,7 @@ export default function Home() {
             <div className="section-heading services-heading"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> WHAT WE DO</p><h2 id="services-title">Ideas deserve<br /><em>good execution.</em></h2></div><p>From the first sketch to the final detail, we bring design, technology and storytelling together to make the whole experience work harder.</p></div>
             <div className="service-grid">
               {services.map((service) => <Link className={`service-card service-card-${service.id}`} href={service.href} key={service.number} aria-label={`Explore ${service.name}`}>
-                <div className="service-card-art" aria-hidden="true">{service.image ? <Image src={service.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" /> : service.id === "branding" ? <div className="service-brand-art"><span>ED<span>✳</span></span></div> : <div className="service-data-art"><div className="data-art-top"><span>INTELLIGENCE / IN MOTION</span><Sparkles size={20} /></div><div className="data-art-bars"><span /><span /><span /><span /><span /><span /><span /><span /><span /></div><div className="data-art-line"><span /><span /><span /><span /></div></div>}</div>
+                <div className="service-card-art" aria-hidden="true"><Image src={service.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" /></div>
                 <div className="service-card-top"><span>{service.number} / SERVICE</span><service.icon size={27} strokeWidth={1.5} aria-hidden="true" /></div>
                 <div className="service-card-copy"><h3>{service.name}</h3><p>{service.detail}</p><ul>{service.features.map(feature => <li key={feature}>{feature}</li>)}</ul><span className="service-card-link"><span>Explore this service</span><span className="circle-arrow"><ArrowUpRight size={20} aria-hidden="true" /></span></span></div>
               </Link>)}
