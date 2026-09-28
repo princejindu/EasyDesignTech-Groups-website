@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    @keyframes glow { 0%, 100% { opacity: .55; transform: scale(.82) } 50% { opacity: 1; transform: scale(1.25) } }
+    .spark { transform-origin: 50px 51px; animation: glow 2.6s ease-in-out infinite }
+    @media (prefers-reduced-motion: reduce) { .spark { animation: none; opacity: 1 } }
+  </style>
+  <rect width="64" height="64" rx="13" fill="#101420"/>
+  <path d="M17 13h30v8H26v9h17v8H26v9h21v8H17z" fill="#d7fb66"/>
+  <circle class="spark" cx="50" cy="51" r="4" fill="#fff"/>
+</svg>
