@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { contact } from "@/lib/contact";
 
 const interests = ["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyHoli", "EasyProperties", "Something else"];
+const packageNames = new Set(["Website Launch", "Website Growth", "Product First Build", "Social Presence", "Workflow Starter", "Short Video"]);
 export function FacebookContactLink() {
   const [url, setUrl] = useState(contact.facebook);
   useEffect(() => {
@@ -23,14 +24,17 @@ export function FacebookContactLink() {
 export function EnquiryForm() {
   const searchParams = useSearchParams();
   const [interest, setInterest] = useState("");
+  const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [error, setError] = useState("");
   useEffect(() => {
     const requested = searchParams.get("interest");
-    if (requested && interests.includes(requested)) {
-      const timer = window.setTimeout(() => setInterest(requested), 0);
-      return () => window.clearTimeout(timer);
-    }
+    const selectedPackage = searchParams.get("package");
+    const timer = window.setTimeout(() => {
+      if (requested && interests.includes(requested)) setInterest(requested);
+      if (selectedPackage && packageNames.has(selectedPackage)) setMessage(`I am interested in the ${selectedPackage} package. My project is `);
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [searchParams]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -42,13 +46,13 @@ export function EnquiryForm() {
       const response = await fetch("/api/enquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: values.get("name"), email: values.get("email"), phone: values.get("phone"), interest, message: values.get("message"), website: values.get("website"), consent: values.get("consent") === "on" }) });
       const result = await response.json() as { error?: string };
       if (!response.ok) throw new Error(result.error || "Please try again");
-      form.reset(); setInterest(""); setStatus("success");
+      form.reset(); setInterest(""); setMessage(""); setStatus("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please try again"); setStatus("error"); }
   }
   return <form className="enquiry-form" onSubmit={submit}>
     <div className="field-pair"><label>YOUR NAME<input required name="name" autoComplete="name" minLength={2} maxLength={100} placeholder="Your name" /></label><label>EMAIL ADDRESS<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label></div>
     <div className="field-pair"><label>PHONE OR WHATSAPP <span>OPTIONAL</span><input name="phone" type="tel" autoComplete="tel" maxLength={50} placeholder="Your number" /></label><label>WHAT CAN WE HELP WITH?<Select value={interest} onValueChange={value => setInterest(value || "")} required><SelectTrigger className="interest-select" aria-label="Service or business of interest"><SelectValue placeholder="Choose a service or business" /></SelectTrigger><SelectContent>{interests.map(item => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label></div>
-    <label>YOUR MESSAGE<textarea name="message" required minLength={15} maxLength={4000} rows={5} placeholder="Tell us a little about your idea or enquiry" /></label>
+    <label>YOUR MESSAGE<textarea name="message" value={message} onChange={event => setMessage(event.target.value)} required minLength={15} maxLength={4000} rows={5} placeholder="Tell us a little about your idea or enquiry" /></label>
     <label className="honeypot" aria-hidden="true">Leave blank<input name="website" tabIndex={-1} autoComplete="off" /></label>
     <label className="consent"><input type="checkbox" name="consent" required /><span>Use my details to respond to this enquiry.</span></label>
     <div className="form-bottom"><button className="button button-light" type="submit" disabled={status === "sending"}>{status === "sending" ? "Sending…" : "Send enquiry"} <Send size={17} aria-hidden="true" /></button><p aria-live="polite" className={status === "error" ? "form-error" : "form-success"}>{status === "success" ? "Thank you. Your message is in our inbox." : status === "error" ? error : "We will use your information only to reply."}</p></div>

@@ -11,9 +11,9 @@ import { SocialProof } from "@/components/social-proof";
 
 const services = [
   { number: "01", name: "Web and app development", detail: "Thoughtful websites, useful platforms and mobile experiences built to turn a bold idea into something people love to use.", features: ["Websites and commerce", "Web apps and portals", "Mobile product design"], icon: Braces, id: "web-apps", href: "/services/web-apps", image: "/service-devices.webp" },
-  { number: "02", name: "Branding and design", detail: "A brand people recognise at a glance, carried through identity, graphics, print and every important touchpoint.", features: ["Identity systems", "Graphic and print design", "Campaign creative"], icon: Layers3, id: "branding", href: "/services#branding", image: "/service-branding.webp" },
+  { number: "02", name: "Branding and design", detail: "A brand people recognise at a glance, carried through identity, graphics, print and every important touchpoint.", features: ["Identity systems", "Graphic and print design", "Campaign creative"], icon: Layers3, id: "branding", href: "/services/branding", image: "/service-branding.webp" },
   { number: "03", name: "Social media and content", detail: "Content with a point of view, from social campaigns and account care to striking AI assisted video and motion.", features: ["Social strategy", "AI video and reels", "Content production"], icon: Sparkles, id: "social", href: "/services/social-content", image: "/service-content.webp" },
-  { number: "04", name: "AI automation and data", detail: "Smarter workflows, clearer dashboards and better connected customer journeys that make everyday work easier.", features: ["AI workflows", "Dashboards", "Customer systems"], icon: Compass, id: "automation", href: "/services#automation", image: "/service-systems.webp" },
+  { number: "04", name: "AI automation and data", detail: "Smarter workflows, clearer dashboards and better connected customer journeys that make everyday work easier.", features: ["AI workflows", "Dashboards", "Customer systems"], icon: Compass, id: "automation", href: "/services/automation", image: "/service-systems.webp" },
 ];
 
 const ventures = [
@@ -50,24 +50,25 @@ export default function Home() {
       <SiteHeader />
       <main>
         <section className="hero" aria-labelledby="hero-title">
+          <div className="hero-motion" aria-hidden="true"><Image src="/business-globe.webp" alt="" fill priority sizes="100vw" /><span className="hero-motion-wash" /><span className="hero-motion-light hero-motion-light-one" /><span className="hero-motion-light hero-motion-light-two" /><span className="hero-motion-ring hero-motion-ring-one" /><span className="hero-motion-ring hero-motion-ring-two" /><span className="hero-motion-sweep" /></div>
           <div className="hero-glow" aria-hidden="true" />
           <div className="container hero-layout">
             <div className="hero-copy">
-              <p className="eyebrow"><span className="eyebrow-line" /> THE EASYDESIGNTECH UNIVERSE</p>
-              <h1 id="hero-title">Building the<br /><em>future</em> today.</h1>
-              <p className="hero-intro">We create digital experiences, shape brands and build ventures that make the next step feel easier.</p>
+              <p className="eyebrow"><span className="eyebrow-line" /> DESIGN / TECHNOLOGY / GROWTH</p>
+              <h1 id="hero-title">Make your<br /><em>next move</em><br />matter.</h1>
+              <p className="hero-intro">Websites and apps, standout brands, content and AI workflows for businesses ready to be seen and chosen.</p>
               <div className="hero-actions">
-                <a className="button button-light" href="/businesses">Explore our businesses <ArrowUpRight size={18} aria-hidden="true" /></a>
-                <Link className="text-link text-link-light" href="/services">See what we do <ArrowDownRight size={18} aria-hidden="true" /></Link>
+                <Link className="button button-light" href="/contact">Start your project <ArrowUpRight size={18} aria-hidden="true" /></Link>
+                <Link className="text-link text-link-light" href="/services">Explore services <ArrowDownRight size={18} aria-hidden="true" /></Link>
               </div>
             </div>
             <div className="hero-directory" aria-label="Choose a business">
-              <div className="directory-top"><span>THE DIRECTORY</span><span>01 / 04</span></div>
+              <div className="directory-top"><span>CHOOSE YOUR NEXT STEP</span><span>01 / 04</span></div>
               <Link href="/services" className="directory-row"><span className="directory-index">01</span><span><strong>EasyDesignTech</strong><small>Creative and digital services</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
               <a href="https://www.geteasylink.app/" className="directory-row"><span className="directory-index">02</span><span><strong>Easylink eSIM</strong><small>Connectivity</small></span><MoveUpRight size={22} aria-hidden="true" /></a>
               <Link href="/easyholi" className="directory-row"><span className="directory-index">03</span><span><strong>EasyHoli</strong><small>Travel</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
               <Link href="/easyproperties" className="directory-row"><span className="directory-index">04</span><span><strong>EasyProperties</strong><small>Property</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
-              <div className="directory-bottom"><span>ONE VISION. MANY POSSIBILITIES.</span><span className="directory-asterisk">✳</span></div>
+              <div className="directory-bottom"><Link href="/pricing">SEE STARTING PRICES <ArrowUpRight size={14} /></Link><span className="directory-asterisk">✳</span></div>
             </div>
           </div>
           <div className="hero-bottom container"><span>DESIGN. TECHNOLOGY. POSSIBILITY.</span><span>SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span></div>
@@ -83,7 +84,7 @@ export default function Home() {
                 <div className="service-card-copy"><h3>{service.name}</h3><p>{service.detail}</p><ul>{service.features.map(feature => <li key={feature}>{feature}</li>)}</ul><span className="service-card-link"><span>Explore this service</span><span className="circle-arrow"><ArrowUpRight size={20} aria-hidden="true" /></span></span></div>
               </Link>)}
             </div>
-            <div className="section-foot"><span>FROM FIRST IDEA TO THE FINISHED EXPERIENCE</span><Link href="/services" className="text-link">Explore all services <ArrowUpRight size={18} aria-hidden="true" /></Link></div>
+            <div className="section-foot"><span>FROM FIRST IDEA TO THE FINISHED EXPERIENCE</span><div className="section-foot-actions"><Link href="/pricing" className="text-link">View pricing <ArrowUpRight size={18} aria-hidden="true" /></Link><Link href="/services" className="text-link">Explore all services <ArrowUpRight size={18} aria-hidden="true" /></Link></div></div>
           </div>
         </section>
 

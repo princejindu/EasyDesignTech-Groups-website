@@ -16,7 +16,7 @@ const slides = [
     number: "02", label: "IDENTITY AND DESIGN", short: "Branding", title: "Branding and design",
     copy: "An unmistakable visual language, from the first impression to every detail that follows.",
     image: "/service-branding.webp", bg: "#48253b", panel: "#713d53", accent: "#ffd2b5", ghost: "SHAPE",
-    href: "/contact?interest=Branding%20and%20design", action: "Discuss your brand",
+    href: "/services/branding", action: "Explore brand work",
   },
   {
     number: "03", label: "CONTENT AND CONNECTION", short: "Social and video", title: "Social media and content",
@@ -28,7 +28,7 @@ const slides = [
     number: "04", label: "SYSTEMS AND INSIGHT", short: "AI and data", title: "AI automation and data",
     copy: "Clearer information and connected workflows that give your team more room to do good work.",
     image: "/service-systems.webp", bg: "#103b40", panel: "#1d6364", accent: "#cbfaac", ghost: "CONNECT",
-    href: "/contact?interest=AI%20automation%20and%20data", action: "Discuss your workflow",
+    href: "/services/automation", action: "Explore AI workflows",
   },
 ] as const;
 

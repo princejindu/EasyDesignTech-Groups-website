@@ -11,22 +11,23 @@ import { contact } from "@/lib/contact";
 const sections = [
   { name: "Home", href: "/" },
   { name: "Services", href: "/services" },
+  { name: "Pricing", href: "/pricing" },
   { name: "Our businesses", href: "/businesses" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];
 
 const mobileLinks = [
-  ...sections.slice(0, 3),
+  ...sections.slice(0, 4),
   { name: "Easylink eSIM", href: "https://www.geteasylink.app/" },
   { name: "EasyHoli", href: "/easyholi" },
   { name: "EasyProperties", href: "/easyproperties" },
-  ...sections.slice(3),
+  ...sections.slice(4),
   { name: "Start a project", href: "/contact" },
 ];
 
 function Brand({ footer = false }: { footer?: boolean }) {
-  return <Link className={`brand brand-logo${footer ? " brand-footer" : ""}`} href="/" aria-label="EasyDesignTech home"><span className="brand-logo-crop"><img src="/brand-dark.jpg" alt="EasyDesign Technology Ltd" /></span></Link>;
+  return <Link className={`brand brand-logo${footer ? " brand-footer" : ""}`} href="/" aria-label="EasyDesignTech home"><img className="brand-symbol" src="/brand-icon.png" alt="" /><span className="brand-wordmark"><span className="brand-wordmark-line">EasyDesign<b>Tech</b></span><small>CREATIVE STUDIO</small></span></Link>;
 }
 
 export function SiteHeader() {
@@ -81,5 +82,5 @@ export function SocialLinks() {
 }
 
 export function SiteFooter() {
-  return <><footer className="site-footer"><div className="container"><div className="footer-main"><div><Brand footer /><p>Building the future today.</p><a className="footer-email" href={`mailto:${contact.email}`}>{contact.email}</a><SocialLinks /></div><div className="footer-links"><div><span>EXPLORE</span><a href="/">Home</a><a href="/services">Our services</a><a href="/businesses">Our businesses</a><a href="/about">About EasyDesignTech</a><a href="/reviews">Client voices</a><a href="/contact">Get in touch</a></div><div><span>BUSINESSES</span><a href="https://www.geteasylink.app/" target="_blank" rel="noopener noreferrer">Easylink eSIM <ArrowUpRight size={13} aria-hidden="true" /></a><Link href="/easyholi">EasyHoli</Link><Link href="/easyproperties">EasyProperties</Link></div></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} EasyDesignTech Ltd</span><a href="/">Back to home <ArrowUpRight size={15} aria-hidden="true" /></a></div></div></footer><ChatWidget /></>;
+  return <><footer className="site-footer"><div className="container"><div className="footer-main"><div><Brand footer /><p>Design, build and grow what comes next.</p><a className="footer-email" href={`mailto:${contact.email}`}>{contact.email}</a><SocialLinks /></div><div className="footer-links"><div><span>EXPLORE</span><a href="/">Home</a><a href="/services">Our services</a><a href="/pricing">Pricing guide</a><a href="/businesses">Our businesses</a><a href="/about">About EasyDesignTech</a><a href="/reviews">Client voices</a><a href="/contact">Get in touch</a></div><div><span>SERVICES AND BUSINESSES</span><a href="/services/web-apps">Web and apps</a><a href="/services/branding">Branding and design</a><a href="/services/social-content">Social and content</a><a href="/services/automation">AI automation</a><a href="https://www.geteasylink.app/" target="_blank" rel="noopener noreferrer">Easylink eSIM <ArrowUpRight size={13} aria-hidden="true" /></a><Link href="/easyholi">EasyHoli</Link><Link href="/easyproperties">EasyProperties</Link></div></div></div><div className="footer-bottom"><span>© {new Date().getFullYear()} EasyDesignTech Ltd</span><a href="/">Back to home <ArrowUpRight size={15} aria-hidden="true" /></a></div></div></footer><ChatWidget /></>;
 }
