@@ -6,9 +6,9 @@ import { ArrowUpRight, Mail, MessageCircle, Send, X } from "lucide-react";
 import Image from "next/image";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { contact } from "@/lib/contact";
+import { serviceForPackage } from "@/lib/quote";
 
 const interests = ["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyHoli", "EasyProperties", "Something else"];
-const packageNames = new Set(["Website Launch", "Website Growth", "Product First Build", "Social Presence", "Workflow Starter", "Short Video"]);
 export function FacebookContactLink() {
   const [url, setUrl] = useState(contact.facebook);
   useEffect(() => {
@@ -23,16 +23,22 @@ export function FacebookContactLink() {
 
 export function EnquiryForm() {
   const searchParams = useSearchParams();
+  const isQuote = searchParams.get("quote") === "tailored";
   const [interest, setInterest] = useState("");
+  const [selectedPackage, setSelectedPackage] = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [error, setError] = useState("");
   useEffect(() => {
     const requested = searchParams.get("interest");
-    const selectedPackage = searchParams.get("package");
+    const requestedPackage = searchParams.get("package") || "";
+    const packageInterest = serviceForPackage(requestedPackage);
     const timer = window.setTimeout(() => {
-      if (requested && interests.includes(requested)) setInterest(requested);
-      if (selectedPackage && packageNames.has(selectedPackage)) setMessage(`I am interested in the ${selectedPackage} package. My project is `);
+      if (packageInterest) {
+        setInterest(packageInterest);
+        setSelectedPackage(requestedPackage);
+        setMessage(`I am interested in the ${requestedPackage} package. My project is `);
+      } else if (requested && interests.includes(requested)) setInterest(requested);
     }, 0);
     return () => window.clearTimeout(timer);
   }, [searchParams]);
@@ -43,19 +49,21 @@ export function EnquiryForm() {
     const values = new FormData(form);
     setStatus("sending"); setError("");
     try {
-      const response = await fetch("/api/enquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: values.get("name"), email: values.get("email"), phone: values.get("phone"), interest, message: values.get("message"), website: values.get("website"), consent: values.get("consent") === "on" }) });
+      const response = await fetch("/api/enquiries", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: values.get("name"), email: values.get("email"), phone: values.get("phone"), interest, message: values.get("message"), quoteType: isQuote ? "tailored" : "general", packageName: isQuote ? selectedPackage : "", timeline: isQuote ? values.get("timeline") : "", budget: isQuote ? values.get("budget") : "", website: values.get("website"), consent: values.get("consent") === "on" }) });
       const result = await response.json() as { error?: string };
       if (!response.ok) throw new Error(result.error || "Please try again");
-      form.reset(); setInterest(""); setMessage(""); setStatus("success");
+      form.reset(); setInterest(""); setSelectedPackage(""); setMessage(""); setStatus("success");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Please try again"); setStatus("error"); }
   }
   return <form className="enquiry-form" onSubmit={submit}>
+    {isQuote && <div className="quote-form-banner" role="status"><span>TAILORED QUOTE REQUEST</span><strong>{selectedPackage || "Tell us what you need"}</strong><p>{interest ? `Service: ${interest}` : "Choose your service below and share a few details."}</p></div>}
     <div className="field-pair"><label>YOUR NAME<input required name="name" autoComplete="name" minLength={2} maxLength={100} placeholder="Your name" /></label><label>EMAIL ADDRESS<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label></div>
-    <div className="field-pair"><label>PHONE OR WHATSAPP <span>OPTIONAL</span><input name="phone" type="tel" autoComplete="tel" maxLength={50} placeholder="Your number" /></label><label>WHAT CAN WE HELP WITH?<Select value={interest} onValueChange={value => setInterest(value || "")} required><SelectTrigger className="interest-select" aria-label="Service or business of interest"><SelectValue placeholder="Choose a service or business" /></SelectTrigger><SelectContent>{interests.map(item => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label></div>
-    <label>YOUR MESSAGE<textarea name="message" value={message} onChange={event => setMessage(event.target.value)} required minLength={15} maxLength={4000} rows={5} placeholder="Tell us a little about your idea or enquiry" /></label>
+    <div className="field-pair"><label>PHONE OR WHATSAPP <span>OPTIONAL</span><input name="phone" type="tel" autoComplete="tel" maxLength={50} placeholder="Your number" /></label><label>WHAT CAN WE HELP WITH?<Select value={interest} onValueChange={value => { const next = value || ""; setInterest(next); if (selectedPackage && serviceForPackage(selectedPackage) !== next) setSelectedPackage(""); }} required><SelectTrigger className="interest-select" aria-label="Service or business of interest"><SelectValue placeholder="Choose a service or business" /></SelectTrigger><SelectContent>{interests.map(item => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></label></div>
+    {isQuote && <div className="field-pair"><label>IDEAL TIMELINE <span>OPTIONAL</span><input name="timeline" maxLength={100} placeholder="For example, within 2 months" /></label><label>APPROXIMATE BUDGET <span>OPTIONAL</span><input name="budget" maxLength={100} placeholder="A range is fine" /></label></div>}
+    <label>{isQuote ? "TELL US ABOUT YOUR PROJECT" : "YOUR MESSAGE"}<textarea name="message" value={message} onChange={event => setMessage(event.target.value)} required minLength={15} maxLength={3800} rows={5} placeholder={isQuote ? "What would you like to create, improve or automate?" : "Tell us a little about your idea or enquiry"} /></label>
     <label className="honeypot" aria-hidden="true">Leave blank<input name="website" tabIndex={-1} autoComplete="off" /></label>
     <label className="consent"><input type="checkbox" name="consent" required /><span>Use my details to respond to this enquiry.</span></label>
-    <div className="form-bottom"><button className="button button-light" type="submit" disabled={status === "sending"}>{status === "sending" ? "Sending…" : "Send enquiry"} <Send size={17} aria-hidden="true" /></button><p aria-live="polite" className={status === "error" ? "form-error" : "form-success"}>{status === "success" ? "Thank you. Your message is in our inbox." : status === "error" ? error : "We will use your information only to reply."}</p></div>
+    <div className="form-bottom"><button className="button button-light" type="submit" disabled={status === "sending"}>{status === "sending" ? "Sending…" : isQuote ? "Request tailored quote" : "Send enquiry"} <Send size={17} aria-hidden="true" /></button><p aria-live="polite" className={status === "error" ? "form-error" : "form-success"}>{status === "success" ? isQuote ? "Thank you. Your quote request is in our inbox." : "Thank you. Your message is in our inbox." : status === "error" ? error : "We will use your information only to reply."}</p></div>
   </form>;
 }
 
@@ -135,7 +143,7 @@ export function ChatWidget() {
       {stage === "human" && !savedEmail && <form className="chat-contact" onSubmit={saveContact}><label htmlFor="chat-email">Want a reply by email?</label><div><input aria-label="Your name, optional" value={name} onChange={event => setName(event.target.value)} maxLength={100} placeholder="Name, optional" /><input id="chat-email" type="email" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} placeholder="Email address" /><button type="submit" disabled={savingContact}>{savingContact ? "Saving…" : "Save"}</button></div></form>}
       {stage === "human" && savedEmail && <p className="chat-contact-saved">We can follow up at {savedEmail}.</p>}
       <form className="chat-compose" onSubmit={event => { event.preventDefault(); void sendMessage(draft.trim()); }}><label htmlFor="chat-message">{stage === "human" ? "ADD TO YOUR MESSAGE" : "YOUR QUESTION"}</label><div><textarea id="chat-message" value={draft} onChange={event => setDraft(event.target.value)} rows={2} maxLength={1000} placeholder={stage === "human" ? "Add a detail for the team…" : "How can we help?"} required disabled={loading || sending} /><button type="submit" disabled={loading || sending || !draft.trim()} aria-label="Send chat message"><Send size={19} /></button></div><p className="chat-error" aria-live="polite">{error}</p></form>
-      <div className="chat-alternatives"><a href={contact.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} /> WhatsApp <ArrowUpRight size={13} /></a><a href={`mailto:${contact.email}`}><Mail size={15} /> Email <ArrowUpRight size={13} /></a><a href="/contact" onClick={() => setOpen(false)}>Project enquiry <ArrowUpRight size={13} /></a></div>
+      <div className="chat-alternatives"><a href={contact.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} /> WhatsApp <ArrowUpRight size={13} /></a><a href={contact.emailHref}><Mail size={15} /> Email <ArrowUpRight size={13} /></a><a href="/contact" onClick={() => setOpen(false)}>Project enquiry <ArrowUpRight size={13} /></a></div>
     </section>}
     <button className="support-trigger" type="button" aria-label={open ? "Close customer care chat" : "Open customer care chat"} aria-expanded={open} onClick={() => { if (!open) setLoading(true); setOpen(value => !value); }}>{open ? <X size={21} aria-hidden="true" /> : <Image src="/support-agent.webp" alt="" width={44} height={44} />}<span>{open ? "Close chat" : "Ask us anything"}</span></button>
   </div>;

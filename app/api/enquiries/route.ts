@@ -1,4 +1,5 @@
 import { database } from "@/db/site-data";
+import { serviceForPackage } from "@/lib/quote";
 
 const allowedInterests = new Set(["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyHoli", "EasyProperties", "Something else"]);
 
@@ -16,13 +17,21 @@ export async function POST(request: Request) {
     const phone = String(data.phone || "").trim();
     const interest = String(data.interest || "").trim();
     const message = String(data.message || "").trim();
-    if (name.length < 2 || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || phone.length > 50 || !allowedInterests.has(interest) || message.length < 15 || message.length > 4000 || data.consent !== true) {
+    const quoteType = String(data.quoteType || "general");
+    const packageName = String(data.packageName || "").trim();
+    const timeline = String(data.timeline || "").trim();
+    const budget = String(data.budget || "").trim();
+    const packageInterest = packageName ? serviceForPackage(packageName) : undefined;
+    if (name.length < 2 || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || phone.length > 50 || !allowedInterests.has(interest) || message.length < 15 || message.length > 3800 || !["general", "tailored"].includes(quoteType) || (packageName && (quoteType !== "tailored" || !packageInterest || packageInterest !== interest)) || timeline.length > 100 || budget.length > 100 || data.consent !== true) {
       return Response.json({ error: "Please check the form and try again" }, { status: 400 });
     }
+    const storedMessage = quoteType === "tailored"
+      ? `TAILORED QUOTE REQUEST\nService: ${interest}${packageName ? `\nPackage: ${packageName}` : ""}${timeline ? `\nTimeline: ${timeline}` : ""}${budget ? `\nBudget: ${budget}` : ""}\n\n${message}`
+      : message;
     const db = database();
     const recent = await db.prepare("SELECT id FROM enquiries WHERE email = ? AND created_at > datetime('now', '-2 minutes') LIMIT 1").bind(email).first();
     if (recent) return Response.json({ error: "Please wait a moment before sending another enquiry" }, { status: 429 });
-    await db.prepare("INSERT INTO enquiries (name, email, phone, interest, message) VALUES (?, ?, ?, ?, ?)").bind(name, email, phone, interest, message).run();
+    await db.prepare("INSERT INTO enquiries (name, email, phone, interest, message) VALUES (?, ?, ?, ?, ?)").bind(name, email, phone, interest, storedMessage).run();
     return Response.json({ ok: true });
   } catch (error) {
     console.error("Enquiry submission failed", error);
