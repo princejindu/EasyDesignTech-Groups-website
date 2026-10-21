@@ -1,28 +1,49 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BookOpen, Fingerprint, Layers3, Megaphone, Palette, PenTool } from "lucide-react";
-import { SiteFooter, SiteHeader } from "@/components/site-shell";
+import { ServicePage } from "@/components/service-page";
 
 export const metadata: Metadata = {
   title: "Branding and design | EasyDesignTech",
-  description: "Brand identity, creative direction, graphic design and campaign assets that help businesses show up with clarity.",
+  description: "Brand identity, guidelines, creative direction, graphic design and campaign assets that help businesses show up with clarity.",
 };
 
-const offerings = [
-  { icon: Fingerprint, title: "Brand identity", copy: "A recognisable logo, colour, type and visual language designed to work together wherever people meet you." },
-  { icon: BookOpen, title: "Brand guidelines", copy: "A practical system your team can use consistently across digital, social and printed materials." },
-  { icon: Palette, title: "Creative direction", copy: "An idea and visual point of view to guide your launch, refresh or next campaign." },
-  { icon: PenTool, title: "Graphic and print", copy: "Presentations, brochures, packaging and everyday assets that carry the same confident story." },
-  { icon: Megaphone, title: "Campaign visuals", copy: "Distinctive assets shaped for the message and channels behind a promotion or launch." },
-  { icon: Layers3, title: "Digital brand systems", copy: "Reusable visuals and interface details that give your website and product a coherent feel." },
-];
-
 export default function BrandingPage() {
-  return <div className="site-shell"><SiteHeader /><main className="specialty-page brand-specialty">
-    <section className="specialty-hero" aria-labelledby="brand-title"><div className="container specialty-hero-grid"><div className="specialty-hero-copy"><div className="specialty-breadcrumb"><Link href="/">Home</Link><span>/</span><Link href="/services">Services</Link><span>/</span><span>Branding</span></div><p className="eyebrow"><span className="eyebrow-line" /> MAKE THE RIGHT IMPRESSION</p><h1 id="brand-title">Look like<br /><em>you mean business.</em></h1><p className="specialty-intro">People decide how they feel about a brand in moments. We give yours a clear identity and the creative tools to show up with confidence again and again.</p><div className="specialty-actions"><Link className="button button-light" href="/contact?interest=Branding%20and%20design">Discuss your brand <ArrowUpRight size={18} aria-hidden="true" /></Link><Link href="/pricing">See starting prices <ArrowRight size={17} aria-hidden="true" /></Link></div></div><div className="specialty-hero-image"><Image src="/service-branding.webp" alt="Expressive graphic design and brand identity composition" fill priority sizes="(max-width: 850px) 100vw, 50vw" /><span>IDENTITY / DIRECTION / DESIGN</span></div></div></section>
-    <div className="specialty-value-strip"><div className="container"><span>RECOGNISABLE AT A GLANCE</span><span>CONSISTENT AT EVERY TOUCHPOINT</span><span>READY TO GROW</span></div></div>
-    <section className="specialty-offerings" aria-labelledby="brand-offerings"><div className="container"><div className="specialty-section-head"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> THE BRAND TOOLKIT</p><h2 id="brand-offerings">An identity with<br /><em>room to move.</em></h2></div><p>Start with the essentials or build a complete system. Every piece should help the right people recognise and remember you.</p></div><div className="specialty-offerings-grid">{offerings.map((item, index) => <article key={item.title}><div><span>{String(index + 1).padStart(2, "0")} / 06</span><item.icon size={28} strokeWidth={1.5} aria-hidden="true" /></div><h3>{item.title}</h3><p>{item.copy}</p><Link className="offering-action" href="/contact?interest=Branding%20and%20design">Enquire about this <ArrowUpRight size={16} aria-hidden="true" /></Link></article>)}</div></div></section>
-    <section className="specialty-close"><div className="container specialty-close-grid"><div><p className="eyebrow"><span className="eyebrow-line" /> MAKE IT YOURS</p><h2>Bring the idea.<br /><em>We will shape the identity.</em></h2></div><div><p>Tell us what you do, who you want to reach and where your brand needs to go next. We can build from a blank page or refresh what already exists.</p><Link className="button button-light" href="/contact?interest=Branding%20and%20design">Start a brand brief <ArrowUpRight size={18} aria-hidden="true" /></Link><Link className="specialty-related" href="/services/social-content">Explore content and video <ArrowRight size={16} aria-hidden="true" /></Link></div></div></section>
-  </main><SiteFooter /></div>;
+  return <ServicePage
+    crumb="Branding and design" slug="branding" interest="Branding and design"
+    title={<>Look like you<br />mean business.</>}
+    intro="People decide how they feel about a brand in moments. We give yours a clear identity and the creative tools to show up with confidence, again and again."
+    action="Discuss your brand"
+    image={{ src: "/service-branding.webp", alt: "Folded paper, ribbon and glass forms in warm brand colours" }}
+    offersTitle="An identity with room to move"
+    offersText="Start with the essentials or build a complete system. Every piece should help the right people recognise and remember you."
+    offers={[
+      { title: "Brand identity", copy: "A recognisable logo, colour, type and visual language designed to work together wherever people meet you." },
+      { title: "Brand guidelines", copy: "A practical system your team can use consistently across digital, social and printed materials." },
+      { title: "Creative direction", copy: "An idea and a visual point of view to guide your launch, refresh or next campaign." },
+      { title: "Graphic and print", copy: "Presentations, brochures, packaging and everyday assets that carry the same confident story." },
+      { title: "Campaign visuals", copy: "Distinctive assets shaped for the message and the channels behind a promotion or launch." },
+      { title: "Digital brand systems", copy: "Reusable visuals and interface details that give your website and product a coherent feel." },
+    ]}
+    feature={{
+      title: "Recognisable at a glance",
+      image: { src: "/brand-dark.jpg", alt: "The EasyDesignTech logo: a blue to violet monogram above the company name" },
+      copy: "A brand earns recognition by being consistent. We design the mark, then the system around it: colours, type, layouts and the rules that keep every post, page and print job looking like you. Our own family of brands, from EasyDesignTech to Easylink, was built the same way.",
+      points: ["Consistent at every touchpoint", "Easy for your team to use", "Ready to grow with new products"],
+      link: { label: "Start a brand brief", href: "/contact?quote=tailored&interest=Branding%20and%20design" },
+    }}
+    steps={[
+      { title: "Discover", copy: "We learn what you do, who you serve and what sets you apart." },
+      { title: "Explore", copy: "We test directions for the idea, the mark and the visual language." },
+      { title: "Design", copy: "We refine the chosen route into a complete, usable identity." },
+      { title: "Roll out", copy: "We apply it to the assets you need and hand over clear guidelines." },
+    ]}
+    packages={[]}
+    faq={[
+      { q: "Can you refresh our brand rather than start again?", a: "Yes. Many businesses need a sharper version of what they already have. We look at what people already recognise and keep what is working." },
+      { q: "What do we receive at the end?", a: "The files you need for screen and print, plus guidelines that explain how to use them. The exact list is agreed in your quote." },
+      { q: "How is branding priced?", a: "Branding is quoted to scope, because a logo refresh and a full identity system are very different jobs. Share your brief and we will propose a clear price." },
+      { q: "Can you design for social media and the website too?", a: "Yes. We can carry the identity into your website, social content and campaigns so everything feels like one brand." },
+    ]}
+    invite={["Bring the idea.", "We’ll shape the brand."]} inviteAction="Start a brand brief"
+    related={{ label: "Carry the brand into social content and video", href: "/services/social-content" }}
+  />;
 }

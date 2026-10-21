@@ -1,9 +1,35 @@
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { SiteFooter, SiteHeader } from "@/components/site-shell";
+import type { Metadata } from "next";
+import { VenturePage } from "@/components/venture-page";
+import { PhoneScene } from "@/components/page-parts";
 
-export const metadata = { title: "Easylink eSIM | EasyDesignTech", description: "Travel connectivity from the EasyDesignTech family." };
+export const metadata: Metadata = { title: "Easylink eSIM | EasyDesignTech", description: "Easylink eSIM: travel data for 190+ destinations, from the EasyDesignTech family." };
+const site = "https://www.geteasylink.app/";
 
 export default function EasylinkPage() {
-  return <div className="site-shell"><SiteHeader /><main className="detail-main esim-detail"><section className="venture-detail-hero esim-detail-hero"><div className="container venture-detail-layout"><div className="venture-detail-copy"><p className="eyebrow"><span className="eyebrow-line" /> EASYDESIGNTECH / CONNECTIVITY</p><h1>Go further.<br /><em>Stay connected.</em></h1><p>Easylink eSIM is built for travellers, remote workers and people on the move who want straightforward mobile data without the usual friction.</p><div className="detail-actions"><a className="button button-light" href="https://www.geteasylink.app/" target="_blank" rel="noopener noreferrer">Visit Easylink eSIM <ArrowUpRight size={18} aria-hidden="true" /></a><Link className="detail-inline-link" href="#vision">Explore the vision <ArrowRight size={18} aria-hidden="true" /></Link></div></div><div className="esim-detail-art"><img src="/esim-globe.webp" alt="Concept visual of a connected globe" /><span>EASY TRAVEL.<br />EASY CONNECT.</span></div></div></section><section className="venture-statement" id="vision"><div className="container statement-grid"><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> THE IDEA</p><div><h2>Connectivity<br />that travels.</h2><p>Explore local, regional and global data options, activate digitally and stay focused on the journey ahead. Easylink eSIM is part of a more connected travel experience across the EasyDesignTech family.</p><div className="statement-tags"><span>Choose</span><span>Activate</span><span>Connect</span></div><a className="statement-cta" href="https://www.geteasylink.app/" target="_blank" rel="noopener noreferrer">Explore Easylink eSIM <ArrowUpRight size={17} aria-hidden="true" /></a></div></div></section><section className="crosslink-section"><div className="container"><p>ANOTHER PART OF THE FAMILY</p><Link href="/easyholi">Plan the journey with EasyHoli <ArrowUpRight size={28} aria-hidden="true" /></Link></div></section></main><SiteFooter /></div>;
+  return <VenturePage
+    crumb="Easylink eSIM" slug="easylink"
+    title={<>Go further.<br />Stay connected.</>}
+    intro="Easylink eSIM is built for travellers, remote workers and anyone on the move who wants straightforward mobile data without the usual friction."
+    action={{ label: "Visit Easylink eSIM", href: site, external: true }}
+    media={<PhoneScene caption="Concept screen of the Easylink plan picker" />}
+    idea={{ title: <>Connectivity<br />that travels.</>, copy: "Explore local, regional and global data options, activate digitally and stay focused on the journey ahead. Easylink is the live part of a more connected travel experience across the EasyDesignTech family.", points: ["Plans for 190+ destinations advertised by Easylink", "Digital setup on compatible phones", "Local, regional and global options"], image: { src: "/esim-globe.webp", alt: "A glowing globe wrapped in lines of connection", width: 1024, height: 1536 }, link: { label: "See plans on Easylink", href: site, external: true } }}
+    featuresTitle="Made for people on the move" featuresText="Different trips need different things. Easylink is designed around the three we hear about most."
+    features={[
+      { title: "Holidays", copy: "Maps, messages and bookings ready the moment you land." },
+      { title: "Work trips", copy: "Keep your working day connected in a new city or time zone." },
+      { title: "Multi-country routes", copy: "Regional and global options for itineraries that cross borders." },
+    ]}
+    stepsTitle="Three steps to connected" stepsText="Coverage, pricing, validity and device compatibility vary. Check current details on Easylink before you buy."
+    steps={[
+      { title: "Find", copy: "Search for where you are going." },
+      { title: "Choose", copy: "Pick the data allowance and validity that fit." },
+      { title: "Connect", copy: "Activate on your phone and go." },
+    ]}
+    next={[
+      { name: "EasyHoli", line: "Trips and shared plans in one place.", href: "/easyholi", image: "/travel.webp", alt: "A sunlit terrace above a coastal old town and the sea", status: "In development" },
+      { name: "EasyProperties", line: "A clearer way to discover property.", href: "/easyproperties", image: "/property.webp", alt: "A bright living room with a city skyline beyond the windows", status: "In development" },
+      { name: "EasyDesignTech services", line: "The studio that builds all three, available for your project.", href: "/services", image: "/service-devices.webp", alt: "Laptop, tablet and phone screens in a blue studio scene" },
+    ]}
+    invite={["Going somewhere?", "Stay connected."]} inviteAction="Visit Easylink" inviteHref={site}
+  />;
 }

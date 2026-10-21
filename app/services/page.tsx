@@ -1,64 +1,70 @@
+ 
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Braces, Layers3, Megaphone, Sparkles } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { SiteFooter, SiteHeader } from "@/components/site-shell";
-import { ServiceSpectrum } from "@/components/service-spectrum";
+import { BandHead, PageHero, Split, Steps } from "@/components/page-parts";
 
 export const metadata: Metadata = {
-  title: "Our services | EasyDesignTech",
-  description: "Web and app development, branding, social content, AI assisted video, automation and data services from EasyDesignTech.",
+  title: "Services | EasyDesignTech",
+  description: "Web and app development, branding, social content, AI assisted video, automation and data services from EasyDesignTech in Birmingham.",
 };
 
 const chapters = [
-  {
-    id: "web-apps", number: "01", category: "DIGITAL PRODUCTS", title: "Web and app development",
-    icon: Braces, theme: "web", image: "/service-devices.webp", href: "/services/web-apps",
+  { id: "web-apps", title: "Websites and apps", href: "/services/web-apps", interest: "Web and apps", image: "/service-devices.webp", alt: "Laptop, tablet and phone screens in a blue studio scene",
     copy: "From a striking first impression to the product behind your business, we design useful digital experiences with a clear path from idea to launch.",
-    items: ["Business websites and online stores", "Web apps and customer portals", "Mobile app design and user journeys"],
-    action: "Explore web and app development",
-  },
-  {
-    id: "branding", number: "02", category: "IDENTITY AND DESIGN", title: "Branding and design",
-    icon: Layers3, theme: "brand", image: "/service-branding.webp", href: "/services/branding",
-    copy: "A memorable brand is more than a logo. We create the visual language, graphic assets and thoughtful details that help your business look and feel like itself.",
-    items: ["Brand identity and direction", "Graphic, print and presentation design", "Campaign visuals and creative systems"],
-    action: "Explore branding and design",
-  },
-  {
-    id: "social", number: "03", category: "CONTENT AND CONNECTION", title: "Social media and content",
-    icon: Megaphone, theme: "social", image: "/service-content.webp", href: "/services/social-content",
-    copy: "Show up with purpose. We turn ideas into visual stories for the channels your audience uses, including AI assisted video concepts, motion and day to day content.",
-    items: ["Content planning and social management", "Short video, reels and motion graphics", "AI assisted video and campaign creative"],
-    action: "Explore content services",
-  },
-  {
-    id: "automation", number: "04", category: "SYSTEMS AND INSIGHT", title: "AI automation and data",
-    icon: Sparkles, theme: "data", image: "/service-systems.webp", href: "/services/automation",
-    copy: "When the right information reaches the right place, teams have more room to do their best work. We shape practical workflows and clearer views of the business.",
-    items: ["AI assisted workflows and customer journeys", "Dashboards and useful reporting", "Organised data and connected systems"],
-    action: "Explore AI automation",
-  },
+    items: ["Business websites and online stores", "Web apps and customer portals", "Mobile app design and user journeys"], price: "Websites from £749" },
+  { id: "branding", title: "Branding and design", href: "/services/branding", interest: "Branding and design", image: "/service-branding.webp", alt: "Folded paper, ribbon and glass forms in warm brand colours",
+    copy: "A logo alone does not make a brand. We create the visual language, graphic assets and details that help your business look and feel like itself.",
+    items: ["Brand identity and direction", "Graphic, print and presentation design", "Campaign visuals and creative systems"], price: "Quoted to your scope" },
+  { id: "social", title: "Social media and content", href: "/services/social-content", interest: "Social media and content", image: "/service-content.webp", alt: "Layered video frames and colour on an editing timeline",
+    copy: "Show up with purpose. We turn ideas into visual stories for the channels your audience uses, including AI assisted video, motion and everyday content.",
+    items: ["Content planning and social management", "Short video, reels and motion graphics", "AI assisted video and campaign creative"], price: "From £450 a month, videos from £300" },
+  { id: "automation", title: "AI automation and data", href: "/services/automation", interest: "AI automation and data", image: "/service-systems.webp", alt: "Glass blocks and green light forming a connected system",
+    copy: "When the right information reaches the right place, teams have more room to do their best work. We build practical workflows and clearer views of the business.",
+    items: ["AI assisted workflows and customer journeys", "Dashboards and useful reporting", "Organised data and connected systems"], price: "Workflows from £900" },
 ];
 
-const capabilities = [
-  "Business websites", "Online stores", "Customer portals", "Mobile app design",
-  "UI and UX design", "Brand identities", "Graphic and print design", "Social account care",
-  "AI assisted video", "Motion and campaign assets", "AI workflows", "Dashboards and reporting",
+const capabilities: [string, string][] = [
+  ["Business websites", "/services/web-apps"], ["Online stores", "/services/web-apps"], ["Customer portals", "/services/web-apps"],
+  ["Mobile app design", "/services/web-apps"], ["UI and UX design", "/services/web-apps"], ["Brand identities", "/services/branding"],
+  ["Graphic and print design", "/services/branding"], ["Social account care", "/services/social-content"], ["AI assisted video", "/services/social-content"],
+  ["Motion and campaign assets", "/services/social-content"], ["AI workflows", "/services/automation"], ["Dashboards and reporting", "/services/automation"],
 ];
 
 export default function ServicesPage() {
-  return <div className="site-shell"><SiteHeader /><main className="services-hub">
-    <ServiceSpectrum />
+  return <div className="site-shell"><SiteHeader /><main id="main">
+    <PageHero
+      crumbs={[{ label: "Home", href: "/" }, { label: "Services", href: "/services" }]}
+      title={<>Make it look good.<br />Make it work.</>}
+      intro="Design, technology and storytelling under one roof in Birmingham. Choose the part you need, or bring us the whole challenge."
+      action={{ label: "Start your project", href: "/contact" }}
+      secondary={{ label: "Compare starting prices", href: "/pricing" }}
+      image={{ src: "/service-content.webp", alt: "Layered creative frames, colour and motion on a studio screen" }}
+    />
 
-    <div className="services-motion-ribbon" aria-hidden="true"><div>THINK <span>✳</span> DESIGN <span>✳</span> BUILD <span>✳</span> REFINE <span>✳</span> THINK <span>✳</span> DESIGN <span>✳</span> BUILD <span>✳</span> REFINE <span>✳</span></div></div>
+    {chapters.map((item, index) => <Split key={item.id} id={`svc-${item.id}`} flip={index % 2 === 1} tone={index % 2 === 0 ? "band-paper" : "band-dark"} image={{ src: item.image, alt: item.alt }} title={item.title}>
+      <p>{item.copy}</p>
+      <ul>{item.items.map(value => <li key={value}>{value}</li>)}</ul>
+      <p><strong>{item.price}</strong></p>
+      <div className="actions">
+        <a className={index % 2 === 0 ? "button button-dark" : "button"} href={item.href}>Explore {item.title.toLowerCase()} <ArrowUpRight size={18} aria-hidden="true" /></a>
+        <a className="text-link" href={`/contact?quote=tailored&interest=${encodeURIComponent(item.interest)}`}>Get a quote <ArrowUpRight size={17} aria-hidden="true" /></a>
+      </div>
+    </Split>)}
 
-    <section className="services-chapters" aria-labelledby="chapters-title"><div className="container"><div className="services-chapters-intro"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> WHAT WE DO</p><h2 id="chapters-title">Good work,<br /><em>from every angle.</em></h2></div><p>Four connected areas of expertise. Choose the one that fits your brief, or bring us the whole challenge.</p></div>
-      <div className="service-chapters-list">{chapters.map(item => <article className={`service-chapter chapter-${item.theme}`} id={item.id} key={item.id}><span className="service-chapter-number">{item.number} / 04</span><div className="service-chapter-copy"><div className="service-chapter-icon"><item.icon size={28} strokeWidth={1.5} aria-hidden="true" /></div><p className="service-chapter-category">{item.category}</p><h3>{item.title}</h3><p className="service-chapter-description">{item.copy}</p><ul>{item.items.map(value => <li key={value}>{value}</li>)}</ul><div className="service-chapter-actions"><Link href={item.href} className="service-chapter-link">{item.action} <ArrowUpRight size={18} aria-hidden="true" /></Link><Link href={`/contact?interest=${encodeURIComponent(item.title === "Web and app development" ? "Web and apps" : item.title)}`} className="service-chapter-link">Get a quote <ArrowUpRight size={18} aria-hidden="true" /></Link></div></div><div className="service-chapter-art" aria-hidden="true"><Image src={item.image} alt="" fill sizes="(max-width: 850px) 100vw, 37vw" /><span>{item.number} / {item.category}</span></div></article>)}</div>
-    </div></section>
+    <section className="band band-deep" aria-labelledby="cap-title">
+      <BandHead id="cap-title" title="One studio, every part of the job" text="Have a brief that spans several of these? Most of our projects do. Tell us the whole thing and we will plan a sensible order of work." />
+      <div className="cap-list">{capabilities.map(([name, href], index) => <a key={name} className="rv" style={{ ["--d" as string]: index % 2 }} href={href}>{name}</a>)}</div>
+    </section>
 
-    <section className="services-capabilities"><div className="container"><div className="services-capabilities-head"><p className="eyebrow"><span className="eyebrow-line" /> A CLOSER LOOK</p><h2>One studio.<br /><em>More ways to move forward.</em></h2></div><div className="services-capabilities-grid">{capabilities.map((value, index) => <Link href={index < 5 ? "/services/web-apps" : index < 7 ? "/services/branding" : index < 10 ? "/services/social-content" : "/services/automation"} key={value}><span>{String(index + 1).padStart(2, "0")}</span><strong>{value}</strong><ArrowUpRight size={17} aria-hidden="true" /></Link>)}</div><p>Have a brief that spans several areas? <Link href="/contact">Tell us what you are building <ArrowRight size={16} aria-hidden="true" /></Link></p><Link className="services-pricing-link" href="/pricing">Compare starting packages <ArrowUpRight size={17} aria-hidden="true" /></Link></div></section>
-
-    <section className="services-hub-end"><div className="container services-hub-end-grid"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> FROM IDEA TO IMPACT</p><h2>Let us make the<br /><em>next step count.</em></h2></div><div><p>Tell us where you are now and where you want to go. We will help shape the work around your goals and the people you want to reach.</p><Link className="button button-dark" href="/contact">Start your project <ArrowUpRight size={18} aria-hidden="true" /></Link></div></div></section>
-  </main><SiteFooter /></div>;
+    <section className="band band-blue" aria-labelledby="how-title">
+      <BandHead id="how-title" title="How a project runs" text="Every project, large or small, follows the same four moves. You always know what happens next and what it costs." />
+      <Steps items={[
+        { title: "Listen", copy: "We learn the business, the audience and the problem worth solving." },
+        { title: "Shape", copy: "We map the journey, agree the scope and send a written quote." },
+        { title: "Build", copy: "We design and build it across every screen, sharing progress as we go." },
+        { title: "Grow", copy: "We launch, measure what changes and keep improving it with you." },
+      ]} />
+    </section>
+  </main><SiteFooter invite={["Tell us what", "you’re building."]} /></div>;
 }

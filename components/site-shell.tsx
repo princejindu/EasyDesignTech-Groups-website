@@ -1,93 +1,130 @@
 "use client";
 /* eslint-disable @next/next/no-html-link-for-pages -- Full page navigation starts at the top of each destination. */
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowUpRight, Ghost, Menu, Music2, X as CloseIcon } from "lucide-react";
+import { ArrowUpRight, Menu, X as CloseIcon } from "lucide-react";
 import { ChatWidget } from "@/components/contact-experience";
 import { contact } from "@/lib/contact";
 
-const sections = [
-  { name: "Home", href: "/" },
+export const navLinks = [
   { name: "Services", href: "/services" },
-  { name: "Pricing", href: "/pricing" },
   { name: "Our businesses", href: "/businesses" },
+  { name: "Pricing", href: "/pricing" },
   { name: "About", href: "/about" },
+  { name: "Reviews", href: "/reviews" },
+];
+
+const menuLinks = [
+  { name: "Home", href: "/" },
+  ...navLinks,
+  { name: "Websites and apps", href: "/services/web-apps" },
+  { name: "Branding and design", href: "/services/branding" },
+  { name: "Social media and content", href: "/services/social-content" },
+  { name: "AI automation and data", href: "/services/automation" },
   { name: "Contact", href: "/contact" },
 ];
 
-const mobileLinks = [
-  ...sections.slice(0, 4),
-  { name: "Easylink eSIM", href: "https://www.geteasylink.app/" },
-  { name: "EasyHoli", href: "/easyholi" },
-  { name: "EasyProperties", href: "/easyproperties" },
-  ...sections.slice(4),
-  { name: "Start a project", href: "/contact" },
-];
+function isActive(path: string, href: string) {
+  if (href === "/businesses") return ["/businesses", "/easylink", "/easyholi", "/easyproperties"].includes(path);
+  if (href === "/services") return path.startsWith("/services");
+  return path === href;
+}
 
-function Brand({ footer = false }: { footer?: boolean }) {
-  return <Link className={`brand brand-logo${footer ? " brand-footer" : ""}`} href="/" aria-label="EasyDesignTech home"><img className="brand-symbol" src="/brand-icon.png" alt="" /><span className="brand-wordmark"><span className="brand-wordmark-line">EasyDesign<b>Tech</b></span><small>CREATIVE STUDIO</small></span></Link>;
+/** Reveals `.rv` elements as they enter the viewport. Content stays visible if this never runs. */
+export function Motion() {
+  const path = usePathname();
+  useEffect(() => {
+    (window as unknown as { __edtMotion?: boolean }).__edtMotion = true;
+    const items = Array.from(document.querySelectorAll<HTMLElement>(".rv:not(.in)"));
+    if (!("IntersectionObserver" in window)) { items.forEach(item => item.classList.add("in")); return; }
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("in");
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    items.forEach(item => observer.observe(item));
+    return () => observer.disconnect();
+  }, [path]);
+  return null;
+}
+
+export function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    window.addEventListener("keydown", close);
+    document.body.style.overflow = "hidden";
+    return () => { window.removeEventListener("keydown", close); document.body.style.overflow = ""; };
+  }, [open, onClose]);
+  if (!open) return null;
+  return <nav id="mobile-navigation" className="mobile-menu" aria-label="Mobile navigation">
+    {menuLinks.map(item => <a key={item.href} href={item.href} onClick={onClose}>{item.name}<ArrowUpRight size={20} aria-hidden="true" /></a>)}
+    <a className="menu-action" href="/contact" onClick={onClose}>Start a project<ArrowUpRight size={20} aria-hidden="true" /></a>
+  </nav>;
 }
 
 export function SiteHeader() {
   const path = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  useEffect(() => {
-    if (!menuOpen) return;
-    const close = (event: KeyboardEvent) => { if (event.key === "Escape") setMenuOpen(false); };
-    window.addEventListener("keydown", close);
-    return () => window.removeEventListener("keydown", close);
-  }, [menuOpen]);
-  return <header className="site-header" id="top"><div className="container header-inner">
-    <Brand />
-    <nav className="desktop-nav" aria-label="Main navigation">{sections.map(item => <a key={item.href} className={path === item.href || (item.href === "/businesses" && ["/easylink", "/easyholi", "/easyproperties"].includes(path)) || (item.href === "/services" && path.startsWith("/services/")) ? "active" : undefined} href={item.href}>{item.name}</a>)}</nav>
-    <a className="header-cta" href="/contact">Start a project <ArrowUpRight size={16} aria-hidden="true" /></a>
-    <button className="mobile-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-controls="mobile-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}>{menuOpen ? <CloseIcon size={24} /> : <Menu size={24} />}</button>
-  </div>{menuOpen && <nav id="mobile-navigation" className="mobile-menu" aria-label="Mobile navigation">{mobileLinks.map((item, index) => <a key={`${item.href}-${index}`} href={item.href} onClick={() => setMenuOpen(false)}>{item.name}<ArrowUpRight size={17} aria-hidden="true" /></a>)}</nav>}</header>;
+  return <>
+    <a className="skip-link" href="#main">Skip to content</a>
+    <header className="site-header" id="top"><div className="header-inner">
+      <a className="brand" href="/" aria-label="EasyDesignTech home"><img src="/brand-icon.png" alt="" width={30} height={30} />EasyDesignTech</a>
+      <nav className="desktop-nav" aria-label="Main navigation">{navLinks.map(item => <a key={item.href} className={isActive(path, item.href) ? "active" : undefined} aria-current={path === item.href ? "page" : undefined} href={item.href}>{item.name}</a>)}</nav>
+      <a className="button header-cta" href="/contact">Start a project <ArrowUpRight size={17} aria-hidden="true" /></a>
+      <button className="mobile-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-controls="mobile-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}>{menuOpen ? <CloseIcon size={24} /> : <Menu size={24} />}</button>
+    </div><MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} /></header>
+    <Motion />
+  </>;
 }
 
 type SocialKey = "facebook" | "instagram" | "snapchat" | "tiktok" | "x" | "linkedin" | "youtube";
-const platforms = [
+const platforms: { key: SocialKey; label: string }[] = [
   { key: "facebook", label: "Facebook" },
   { key: "instagram", label: "Instagram" },
-  { key: "snapchat", label: "Snapchat" },
   { key: "tiktok", label: "TikTok" },
-  { key: "x", label: "X" },
   { key: "linkedin", label: "LinkedIn" },
+  { key: "x", label: "X" },
   { key: "youtube", label: "YouTube" },
-] as const;
+  { key: "snapchat", label: "Snapchat" },
+];
 
-function SocialIcon({ platform }: { platform: SocialKey }) {
-  if (platform === "snapchat") return <Ghost size={17} strokeWidth={1.8} aria-hidden="true" />;
-  if (platform === "tiktok") return <Music2 size={17} strokeWidth={1.8} aria-hidden="true" />;
-  if (platform === "instagram") return <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><rect x="2" y="2" width="14" height="14" rx="4"/><circle cx="9" cy="9" r="3"/><circle cx="13.3" cy="4.8" r=".8" fill="currentColor" stroke="none"/></svg>;
-  return <strong className="social-glyph" aria-hidden="true">{{ facebook: "f", x: "X", linkedin: "in", youtube: "▶" }[platform]}</strong>;
-}
-
+/** Shows only the profiles the owner has published from the studio. */
 export function SocialLinks() {
   const [links, setLinks] = useState<Partial<Record<SocialKey, string>>>({ facebook: contact.facebook });
   useEffect(() => {
     let active = true;
     fetch("/api/social-links", { cache: "no-store" }).then(response => response.ok ? response.json() as Promise<{ links: Partial<Record<SocialKey, string>> }> : null).then(data => {
-      if (active && data?.links) setLinks(data.links);
+      if (active && data?.links) setLinks(current => ({ ...current, ...data.links }));
     }).catch(() => {});
     return () => { active = false; };
   }, []);
-  return <div className="social-links" aria-label="Social media">{platforms.map(platform => {
-    const icon = <SocialIcon platform={platform.key} />;
-    const url = links[platform.key];
-    return url ? <a key={platform.key} href={url} target="_blank" rel="noopener noreferrer" aria-label={`EasyDesignTech on ${platform.label}`} title={platform.label}>{icon}</a> : <span key={platform.key} className="social-soon" aria-label={`${platform.label} profile coming soon`} title={`${platform.label} link coming soon`}>{icon}</span>;
-  })}</div>;
+  return <div className="footer-social" aria-label="Social media">{platforms.filter(platform => links[platform.key]).map(platform => <a key={platform.key} href={links[platform.key]} target="_blank" rel="noopener noreferrer">{platform.label}</a>)}</div>;
 }
 
-export function SiteFooter() {
-  return <><footer className="site-footer"><div className="container"><div className="footer-main">
-    <div className="footer-intro"><Brand footer /><p>Design, build and grow what comes next.</p><div className="footer-contact"><a href={contact.emailHref}>{contact.email} <ArrowUpRight size={14} aria-hidden="true" /></a><a href={contact.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp us <ArrowUpRight size={14} aria-hidden="true" /></a></div></div>
-    <nav className="footer-links" aria-label="Footer navigation">
-      <div><span>EXPLORE</span><a href="/">Home</a><a href="/services">Our services</a><a href="/pricing">Pricing</a><a href="/businesses">Our businesses</a><a href="/about">About</a><a href="/reviews">Reviews</a></div>
-      <div><span>OUR WORK</span><a href="/services/web-apps">Websites and apps</a><a href="/services/branding">Branding and design</a><a href="/services/social-content">Social media and content</a><a href="/services/automation">AI automation</a></div>
-      <div><span>BUSINESSES</span><a href="https://www.geteasylink.app/" target="_blank" rel="noopener noreferrer">Easylink eSIM <ArrowUpRight size={13} aria-hidden="true" /></a><Link href="/easyholi">EasyHoli</Link><Link href="/easyproperties">EasyProperties</Link><a className="footer-project-link" href="/contact">Start a project <ArrowUpRight size={13} aria-hidden="true" /></a></div>
-    </nav>
-  </div><div className="footer-bottom"><SocialLinks /><div className="footer-bottom-meta"><span>© {new Date().getFullYear()} EasyDesignTech Ltd</span></div></div></div></footer><ChatWidget /></>;
+type FooterProps = { invite?: [string, string]; action?: string; href?: string };
+
+export function SiteFooter({ invite = ["Got an idea?", "Let’s build it."], action = "Start a project", href = "/contact" }: FooterProps) {
+  return <><footer className="site-footer">
+    <div className="footer-top">
+      <div className="footer-invite rv"><h2>{invite[0]}<br />{invite[1]}</h2><a className="button button-dark" href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}>{action} <ArrowUpRight size={18} aria-hidden="true" /></a></div>
+      <div className="footer-contact rv" style={{ ["--d" as string]: 1 }}>
+        <a href={contact.emailHref}>{contact.email}</a>
+        <a href={contact.whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp us</a>
+        <a href="/contact">Project enquiry form</a>
+        <span>Birmingham, England</span>
+      </div>
+    </div>
+    <div className="footer-nav">
+      <nav aria-label="Footer navigation">
+        <a href="/">Home</a><a href="/services">Services</a><a href="/services/web-apps">Websites and apps</a><a href="/services/branding">Branding</a><a href="/services/social-content">Content</a><a href="/services/automation">AI automation</a><a href="/pricing">Pricing</a><a href="/businesses">Businesses</a><a href="https://www.geteasylink.app/" target="_blank" rel="noopener noreferrer">Easylink eSIM</a><a href="/easyholi">EasyHoli</a><a href="/easyproperties">EasyProperties</a><a href="/about">About</a><a href="/reviews">Reviews</a><a href="/contact">Contact</a>
+      </nav>
+      <SocialLinks />
+      <span>© {new Date().getFullYear()} EasyDesignTech Ltd · Registered in England and Wales</span>
+    </div>
+    <p className="footer-name" aria-hidden="true">EasyDesignTech</p>
+  </footer><ChatWidget /></>;
 }

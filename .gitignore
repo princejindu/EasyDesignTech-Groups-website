@@ -44,3 +44,7 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+
+# design review output
+/.taste-skill/
+tsconfig.tsbuildinfo
