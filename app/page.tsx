@@ -10,16 +10,16 @@ import { contact } from "@/lib/contact";
 import { SocialProof } from "@/components/social-proof";
 
 const services = [
-  { number: "01", name: "Web and app development", detail: "Thoughtful websites, useful platforms and mobile experiences built to turn a bold idea into something people love to use.", features: ["Websites and commerce", "Web apps and portals", "Mobile product design"], icon: Braces, id: "web-apps", href: "/services/web-apps", image: "/service-devices.webp" },
-  { number: "02", name: "Branding and design", detail: "A brand people recognise at a glance, carried through identity, graphics, print and every important touchpoint.", features: ["Identity systems", "Graphic and print design", "Campaign creative"], icon: Layers3, id: "branding", href: "/services/branding", image: "/service-branding.webp" },
-  { number: "03", name: "Social media and content", detail: "Content with a point of view, from social campaigns and account care to striking AI assisted video and motion.", features: ["Social strategy", "AI video and reels", "Content production"], icon: Sparkles, id: "social", href: "/services/social-content", image: "/service-content.webp" },
-  { number: "04", name: "AI automation and data", detail: "Smarter workflows, clearer dashboards and better connected customer journeys that make everyday work easier.", features: ["AI workflows", "Dashboards", "Customer systems"], icon: Compass, id: "automation", href: "/services/automation", image: "/service-systems.webp" },
+  { number: "01", name: "Web and app development", detail: "Thoughtful websites, useful platforms and mobile experiences built to turn a bold idea into something people love to use.", features: ["Websites and commerce", "Web apps and portals", "Mobile product design"], icon: Braces, id: "web-apps", href: "/services/web-apps", image: "/stock-web.jpg" },
+  { number: "02", name: "Branding and design", detail: "A brand people recognise at a glance, carried through identity, graphics, print and every important touchpoint.", features: ["Identity systems", "Graphic and print design", "Campaign creative"], icon: Layers3, id: "branding", href: "/services/branding", image: "/stock-branding.jpg" },
+  { number: "03", name: "Social media and content", detail: "Content with a point of view, from social campaigns and account care to striking AI assisted video and motion.", features: ["Social strategy", "AI video and reels", "Content production"], icon: Sparkles, id: "social", href: "/services/social-content", image: "/stock-content.jpg" },
+  { number: "04", name: "AI automation and data", detail: "Smarter workflows, clearer dashboards and better connected customer journeys that make everyday work easier.", features: ["AI workflows", "Dashboards", "Customer systems"], icon: Compass, id: "automation", href: "/services/automation", image: "/stock-automation.jpg" },
 ];
 
 const ventures = [
-  { name: "Easylink eSIM", category: "Connectivity", description: "Simple, instant mobile connectivity for life beyond borders.", href: "https://www.geteasylink.app/", image: "/esim-globe.webp", theme: "esim", number: "01" },
-  { name: "EasyHoli", category: "Travel", description: "Travel planning that brings the whole journey together.", href: "/easyholi", image: "/travel.webp", theme: "holi", number: "02" },
-  { name: "EasyProperties", category: "Property", description: "A clearer way to discover and navigate property opportunities.", href: "/easyproperties", image: "/property.webp", theme: "property", number: "03" },
+  { name: "Easylink eSIM", category: "Connectivity", description: "Simple, instant mobile connectivity for life beyond borders.", href: "https://www.geteasylink.app/", image: "/stock-esim-travelers.jpg", theme: "esim", number: "01" },
+  { name: "EasyHoli", category: "Travel", description: "Travel planning that brings the whole journey together.", href: "/easyholi", image: "/stock-travel.jpg", theme: "holi", number: "02" },
+  { name: "EasyProperties", category: "Property", description: "A clearer way to discover and navigate property opportunities.", href: "/easyproperties", image: "/stock-property.jpg", theme: "property", number: "03" },
 ];
 
 export default function Home() {
@@ -93,7 +93,7 @@ export default function Home() {
             <div className="section-heading ventures-heading"><div><p className="eyebrow"><span className="eyebrow-line" /> OUR BUSINESSES</p><h2 id="ventures-title">Different worlds.<br /><em>One way forward.</em></h2></div><div className="carousel-controls"><button type="button" onClick={() => move(-1)} disabled={!canScrollLeft} aria-label="Scroll businesses left"><ArrowLeft size={20} /></button><button type="button" onClick={() => move(1)} disabled={!canScrollRight} aria-label="Scroll businesses right"><ArrowRight size={20} /></button></div></div>
             <div className="venture-track" ref={track}>
               {ventures.map((venture) => <a key={venture.name} href={venture.href} className={`venture-card ${venture.theme}`} aria-label={`Explore ${venture.name}`} onPointerMove={event => { if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--tilt-x", `${((event.clientY - rect.top) / rect.height - .5) * -3}deg`); event.currentTarget.style.setProperty("--tilt-y", `${((event.clientX - rect.left) / rect.width - .5) * 3}deg`); }} onPointerLeave={event => { event.currentTarget.style.setProperty("--tilt-x", "0deg"); event.currentTarget.style.setProperty("--tilt-y", "0deg"); }}>
-                <img src={venture.image} alt={venture.theme === "esim" ? "Abstract glass globe with illuminated connections" : venture.theme === "property" ? "Concept image of a contemporary property interior" : "Concept image of a coastal travel destination"} />
+                <img src={venture.image} alt={venture.theme === "esim" ? "Travellers looking at a phone while exploring a city" : venture.theme === "property" ? "Bright modern apartment interior" : "Aerial view of a blue coastline"} />
                 <div className="venture-overlay"><div className="venture-meta"><span>{venture.number} / {venture.category}</span><span className="venture-icon"><ArrowUpRight size={20} aria-hidden="true" /></span></div><div><h3>{venture.name}</h3><p>{venture.description}</p><span className="venture-action">Explore business <ArrowRight size={17} aria-hidden="true" /></span></div></div>
               </a>)}
             </div>

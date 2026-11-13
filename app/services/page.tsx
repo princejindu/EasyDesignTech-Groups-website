@@ -13,28 +13,28 @@ export const metadata: Metadata = {
 const chapters = [
   {
     id: "web-apps", number: "01", category: "DIGITAL PRODUCTS", title: "Web and app development",
-    icon: Braces, theme: "web", image: "/service-devices.webp", href: "/services/web-apps",
+    icon: Braces, theme: "web", image: "/stock-web.jpg", href: "/services/web-apps",
     copy: "From a striking first impression to the product behind your business, we design useful digital experiences with a clear path from idea to launch.",
     items: ["Business websites and online stores", "Web apps and customer portals", "Mobile app design and user journeys"],
     action: "Explore web and app development",
   },
   {
     id: "branding", number: "02", category: "IDENTITY AND DESIGN", title: "Branding and design",
-    icon: Layers3, theme: "brand", image: "/service-branding.webp", href: "/services/branding",
+    icon: Layers3, theme: "brand", image: "/stock-branding.jpg", href: "/services/branding",
     copy: "A memorable brand is more than a logo. We create the visual language, graphic assets and thoughtful details that help your business look and feel like itself.",
     items: ["Brand identity and direction", "Graphic, print and presentation design", "Campaign visuals and creative systems"],
     action: "Explore branding and design",
   },
   {
     id: "social", number: "03", category: "CONTENT AND CONNECTION", title: "Social media and content",
-    icon: Megaphone, theme: "social", image: "/service-content.webp", href: "/services/social-content",
+    icon: Megaphone, theme: "social", image: "/stock-content.jpg", href: "/services/social-content",
     copy: "Show up with purpose. We turn ideas into visual stories for the channels your audience uses, including AI assisted video concepts, motion and day to day content.",
     items: ["Content planning and social management", "Short video, reels and motion graphics", "AI assisted video and campaign creative"],
     action: "Explore content services",
   },
   {
     id: "automation", number: "04", category: "SYSTEMS AND INSIGHT", title: "AI automation and data",
-    icon: Sparkles, theme: "data", image: "/service-systems.webp", href: "/services/automation",
+    icon: Sparkles, theme: "data", image: "/stock-automation.jpg", href: "/services/automation",
     copy: "When the right information reaches the right place, teams have more room to do their best work. We shape practical workflows and clearer views of the business.",
     items: ["AI assisted workflows and customer journeys", "Dashboards and useful reporting", "Organised data and connected systems"],
     action: "Explore AI automation",

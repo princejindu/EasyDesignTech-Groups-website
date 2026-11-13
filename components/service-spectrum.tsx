@@ -9,25 +9,25 @@ const slides = [
   {
     number: "01", label: "DIGITAL PRODUCTS", short: "Web and apps", title: "Web and app development",
     copy: "Thoughtful websites, useful products and smooth digital journeys built around what people need to do.",
-    image: "/service-devices.webp", bg: "#0d2339", panel: "#143d5a", accent: "#d7fb66", ghost: "BUILD",
+    image: "/stock-web.jpg", bg: "#0d2339", panel: "#143d5a", accent: "#d7fb66", ghost: "BUILD",
     href: "/services/web-apps", action: "Explore web and app work",
   },
   {
     number: "02", label: "IDENTITY AND DESIGN", short: "Branding", title: "Branding and design",
     copy: "An unmistakable visual language, from the first impression to every detail that follows.",
-    image: "/service-branding.webp", bg: "#48253b", panel: "#713d53", accent: "#ffd2b5", ghost: "SHAPE",
+    image: "/stock-branding.jpg", bg: "#48253b", panel: "#713d53", accent: "#ffd2b5", ghost: "SHAPE",
     href: "/services/branding", action: "Explore brand work",
   },
   {
     number: "03", label: "CONTENT AND CONNECTION", short: "Social and video", title: "Social media and content",
     copy: "Distinctive stories, campaign visuals and AI assisted video guided by a human creative point of view.",
-    image: "/service-content.webp", bg: "#29213e", panel: "#533b62", accent: "#ffc5a2", ghost: "MOVE",
+    image: "/stock-content.jpg", bg: "#29213e", panel: "#533b62", accent: "#ffc5a2", ghost: "MOVE",
     href: "/services/social-content", action: "Explore content work",
   },
   {
     number: "04", label: "SYSTEMS AND INSIGHT", short: "AI and data", title: "AI automation and data",
     copy: "Clearer information and connected workflows that give your team more room to do good work.",
-    image: "/service-systems.webp", bg: "#103b40", panel: "#1d6364", accent: "#cbfaac", ghost: "CONNECT",
+    image: "/stock-automation.jpg", bg: "#103b40", panel: "#1d6364", accent: "#cbfaac", ghost: "CONNECT",
     href: "/services/automation", action: "Explore AI workflows",
   },
 ] as const;
