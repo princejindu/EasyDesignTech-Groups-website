@@ -19,9 +19,10 @@ const sections = [
 
 const mobileLinks = [
   ...sections.slice(0, 4),
-  { name: "Easylink eSIM", href: "https://www.geteasylink.app/" },
-  { name: "EasyHoli", href: "/easyholi" },
+  { name: "Easylink eSIM", href: "https://easylinksim.com/" },
+  { name: "EasyLink Flex", href: "/easylinkflex" },
   { name: "EasyProperties", href: "/easyproperties" },
+  { name: "eChat · Coming soon", href: "/echat" },
   ...sections.slice(4),
   { name: "Start a project", href: "/contact" },
 ];
@@ -41,7 +42,7 @@ export function SiteHeader() {
   }, [menuOpen]);
   return <header className="site-header" id="top"><div className="container header-inner">
     <Brand />
-    <nav className="desktop-nav" aria-label="Main navigation">{sections.map(item => <a key={item.href} className={path === item.href || (item.href === "/businesses" && ["/easylink", "/easyholi", "/easyproperties"].includes(path)) || (item.href === "/services" && path.startsWith("/services/")) ? "active" : undefined} href={item.href}>{item.name}</a>)}</nav>
+    <nav className="desktop-nav" aria-label="Main navigation">{sections.map(item => <a key={item.href} className={path === item.href || (item.href === "/businesses" && ["/easylink", "/easylinkflex", "/easyproperties", "/echat"].includes(path)) || (item.href === "/services" && path.startsWith("/services/")) ? "active" : undefined} href={item.href}>{item.name}</a>)}</nav>
     <a className="header-cta" href="/contact">Start a project <ArrowUpRight size={16} aria-hidden="true" /></a>
     <button className="mobile-menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-controls="mobile-navigation" aria-expanded={menuOpen} onClick={() => setMenuOpen(value => !value)}>{menuOpen ? <CloseIcon size={24} /> : <Menu size={24} />}</button>
   </div>{menuOpen && <nav id="mobile-navigation" className="mobile-menu" aria-label="Mobile navigation">{mobileLinks.map((item, index) => <a key={`${item.href}-${index}`} href={item.href} onClick={() => setMenuOpen(false)}>{item.name}<ArrowUpRight size={17} aria-hidden="true" /></a>)}</nav>}</header>;
@@ -87,7 +88,7 @@ export function SiteFooter() {
     <nav className="footer-links" aria-label="Footer navigation">
       <div><span>EXPLORE</span><a href="/">Home</a><a href="/services">Our services</a><a href="/pricing">Pricing</a><a href="/businesses">Our businesses</a><a href="/about">About</a><a href="/reviews">Reviews</a></div>
       <div><span>OUR WORK</span><a href="/services/web-apps">Websites and apps</a><a href="/services/branding">Branding and design</a><a href="/services/social-content">Social media and content</a><a href="/services/automation">AI automation</a></div>
-      <div><span>BUSINESSES</span><a href="https://www.geteasylink.app/" target="_blank" rel="noopener noreferrer">Easylink eSIM <ArrowUpRight size={13} aria-hidden="true" /></a><Link href="/easyholi">EasyHoli</Link><Link href="/easyproperties">EasyProperties</Link><a className="footer-project-link" href="/contact">Start a project <ArrowUpRight size={13} aria-hidden="true" /></a></div>
+      <div><span>BUSINESSES</span><a href="https://easylinksim.com/" target="_blank" rel="noopener noreferrer">Easylink eSIM <ArrowUpRight size={13} aria-hidden="true" /></a><Link href="/easylinkflex">EasyLink Flex</Link><Link href="/easyproperties">EasyProperties</Link><Link href="/echat">eChat · Coming soon</Link><a className="footer-project-link" href="/contact">Start a project <ArrowUpRight size={13} aria-hidden="true" /></a></div>
     </nav>
   </div><div className="footer-bottom"><SocialLinks /><div className="footer-bottom-meta"><span>© {new Date().getFullYear()} EasyDesignTech Ltd</span></div></div></div></footer><ChatWidget /></>;
 }

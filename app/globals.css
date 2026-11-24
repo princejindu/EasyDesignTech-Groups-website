@@ -345,7 +345,6 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
 .review-card strong { font-size: 14px; }
 .review-card span { color: #62746a; font-size: 12px; }
 .review-card-top span { font-size: 10px; color: #33726c; }
-.review-card-top .demo-badge { color: #765319; background: #fff1d3; padding: 7px 9px; }
 @keyframes review-flow { to { transform: translate3d(-50%,0,0); } }
 .proof-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 23px; }
 .proof-bottom > span { font-size: 11px; font-weight: 800; color: #718479; letter-spacing: .12em; }
@@ -1456,3 +1455,115 @@ body { font-family: 'Geist', Arial, sans-serif; -webkit-font-smoothing: antialia
   .hero-motion img,.hero-motion-light,.hero-motion-ring,.hero-motion-sweep { animation: none !important; }
   .pricing-card,.brand-symbol { transition: none !important; }
 }
+
+/* A direct studio introduction and a compact service overview. */
+.hero-layout { grid-template-columns: minmax(0,1.12fr) minmax(360px,.88fr); }
+.hero-copy h1 { max-width: 800px; font-size: clamp(60px,5.6vw,90px); }
+.hero-intro { max-width: 650px; }
+.hero-capabilities { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 56px 0 0; color: #c4dbe1; font-size: 10px; font-weight: 800; letter-spacing: .13em; }
+.hero-capabilities span { width: 4px; height: 4px; border-radius: 50%; background: #d7fb66; }
+.hero-directory { transform: none; padding: 22px 26px 17px; }
+.hero-directory:hover { transform: translateY(-5px); }
+.directory-top { padding-bottom: 15px; }
+.hero-directory .directory-row { min-height: 73px; }
+.hero-directory .directory-row strong { font-size: clamp(21px,1.9vw,28px); }
+.hero-directory .directory-index { padding-top: 17px; }
+.services-showcase { padding-block: 82px 76px; }
+.services-showcase .service-grid { margin-top: 38px; gap: 12px; }
+.services-showcase .service-card { min-height: 420px; padding: 23px; }
+.services-showcase .service-card-copy { padding-top: 74px; }
+.services-showcase .service-card h3 { font-size: clamp(32px,3vw,43px); margin-bottom: 9px; }
+.services-showcase .service-card p { font-size: 14px; line-height: 1.48; }
+.services-showcase .service-card ul { margin-top: 14px; gap: 6px; }
+.services-showcase .service-card li { padding: 6px 8px; font-size: 11px; }
+.services-showcase .service-card-link { margin-top: 16px; padding-top: 12px; }
+.services-showcase .circle-arrow { width: 32px; height: 32px; }
+.business-hub-directory { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.business-hub-directory a { padding-right: 28px; }
+.business-hub-directory a:not(:first-child) { padding-left: 22px; }
+.business-hub-directory strong { font-size: clamp(23px,2.5vw,35px); }
+.business-echat { background: radial-gradient(circle at 18% 50%,#24566b 0,transparent 32%),#0d2137; color: #fff; padding: 96px 0; overflow: hidden; }
+.business-echat-grid { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(35px,7vw,110px); align-items: center; }
+.business-echat-icon { min-height: 290px; border: 1px solid #98d1ce66; background: #87d8c50b; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 35px; color: #d7fb66; box-shadow: 22px 22px 0 #d7fb660d; }
+.business-echat-icon span { font-size: 12px; font-weight: 800; letter-spacing: .16em; }
+.business-echat h2,.echat-page h2 { font-size: clamp(50px,5.3vw,78px); line-height: .98; letter-spacing: -.07em; margin: 20px 0 23px; }
+.business-echat h2 em,.echat-hero h1 em { color: #d7fb66; }
+.business-echat-grid > div:last-child > p:not(.eyebrow) { max-width: 610px; color: #c4d6dc; font-size: 18px; line-height: 1.55; margin-bottom: 27px; }
+
+/* eChat is announced honestly until the owner supplies a launch date. */
+.echat-page { color: #fff; }
+.echat-hero { overflow: hidden; padding: 90px 0 85px; background: radial-gradient(circle at 75% 25%,#28506c,transparent 34%),#0d1d32; }
+.echat-hero-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,.9fr); gap: clamp(35px,6vw,90px); align-items: center; }
+.echat-hero h1 { font-size: clamp(66px,7vw,108px); line-height: .93; letter-spacing: -.08em; margin: 28px 0; }
+.echat-hero-grid > div:first-child > p:not(.eyebrow) { max-width: 590px; color: #c7d7e3; font-size: 19px; line-height: 1.57; }
+.echat-visual { position: relative; min-height: 520px; border: 1px solid #a5d8d540; background: radial-gradient(circle at 65% 32%,#397d84,transparent 42%),linear-gradient(150deg,#1a3753,#10162d); overflow: hidden; }
+.echat-orbit { position: absolute; width: 450px; height: 450px; border: 1px solid #d7fb6652; border-radius: 50%; top: -130px; right: -130px; box-shadow: 0 0 0 70px #9ce7ed10,0 0 0 140px #9ce7ed09; }
+.echat-sample { position: absolute; z-index: 2; width: min(310px,74%); padding: 19px 21px; background: #eff8f2; color: #12263a; box-shadow: 0 22px 45px #06162380; display: flex; flex-direction: column; gap: 11px; animation: echat-float 6s ease-in-out infinite alternate; }
+.echat-sample span { color: #41645f; font-size: 10px; font-weight: 800; letter-spacing: .11em; }
+.echat-sample strong { font-size: 20px; letter-spacing: -.035em; }
+.echat-sample-one { top: 19%; left: 8%; transform: rotate(-4deg); }
+.echat-sample-two { right: 7%; top: 48%; background: #d7fb66; transform: rotate(3deg); animation-delay: -3s; }
+.echat-sample-two svg { color: #21534d; }
+.echat-visual-mark { position: absolute; bottom: 15px; left: 25px; font-size: clamp(72px,7.3vw,120px); font-weight: 800; letter-spacing: -.09em; color: #fff9; line-height: 1; }
+.echat-visual-mark span { color: #d7fb66; }
+@keyframes echat-float { to { translate: 0 -11px; } }
+.echat-countdown-section { background: #d7fb66; color: #12253a; padding: 76px 0; }
+.echat-countdown { display: grid; grid-template-columns: minmax(220px,.8fr) minmax(0,1.2fr); gap: 20px 55px; align-items: end; }
+.echat-countdown-heading span { display: block; font-size: 11px; font-weight: 800; letter-spacing: .15em; margin-bottom: 16px; }
+.echat-countdown-heading strong { display: block; font-size: clamp(30px,3.1vw,48px); line-height: 1.06; letter-spacing: -.055em; }
+.echat-countdown-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px; }
+.echat-countdown-grid > div { background: #12253a; color: #fff; min-height: 125px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+.echat-countdown-grid strong { font-size: clamp(36px,4vw,62px); font-variant-numeric: tabular-nums; line-height: 1; letter-spacing: -.075em; }
+.echat-countdown-grid span { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: #b9d4d0; }
+.echat-countdown > p { grid-column: 2; font-size: 14px; margin: 0; color: #35524d; }
+.echat-planned { background: #e8eee8; color: #12253a; padding: 100px 0; }
+.echat-planned h2 em { color: #4e807a; }
+.echat-feature-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin-top: 45px; }
+.echat-feature-grid article { padding: 26px; min-height: 275px; background: #f8faf6; display: flex; flex-direction: column; align-items: flex-start; }
+.echat-feature-grid article svg { color: #3d8476; }
+.echat-feature-grid article span { margin-top: auto; color: #607b70; font-size: 11px; font-weight: 800; letter-spacing: .11em; }
+.echat-feature-grid h3 { margin: 12px 0 10px; font-size: 27px; letter-spacing: -.05em; }
+.echat-feature-grid p { margin: 0; color: #526763; font-size: 15px; line-height: 1.5; }
+.echat-planned-note { margin: 25px 0 0; color: #5e716a; font-size: 13px; }
+
+@media (max-width: 1080px) {
+  .hero-layout { grid-template-columns: minmax(0,1fr) minmax(330px,.9fr); gap: 28px; }
+  .hero-copy h1 { font-size: clamp(57px,6.1vw,78px); }
+  .hero-capabilities { margin-top: 35px; }
+  .business-hub-directory strong { font-size: 24px; }
+}
+@media (max-width: 850px) {
+  .hero-layout { grid-template-columns: 1fr; }
+  .hero-directory { max-width: 650px; margin-top: 24px; }
+  .services-showcase .service-card { min-height: 410px; }
+  .services-showcase .service-card-copy { padding-top: 60px; }
+  .business-hub-directory { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .business-hub-directory a:nth-child(3) { border-left: 0; }
+  .business-echat-grid,.echat-hero-grid,.echat-countdown { grid-template-columns: 1fr; }
+  .echat-countdown > p { grid-column: 1; }
+}
+@media (max-width: 600px) {
+  .hero-copy h1 { font-size: clamp(48px,11vw,68px); }
+  .hero-capabilities { margin-top: 30px; }
+  .hero-directory .directory-row { min-height: 68px; }
+  .services-showcase .service-grid { gap: 10px; }
+  .services-showcase .service-card { min-height: 405px; padding: 21px; }
+  .services-showcase .service-card-copy { padding-top: 48px; }
+  .services-showcase .service-card h3 { font-size: 32px; }
+  .business-hub-directory { grid-template-columns: 1fr; }
+  .business-hub-directory a:nth-child(3) { border-top: 1px solid #ffffff3b; }
+  .business-hub-directory a:not(:first-child) { padding-left: 0; border-left: 0; }
+  .business-echat { padding: 70px 0; }
+  .business-echat-grid { gap: 40px; }
+  .business-echat-icon { min-height: 210px; }
+  .echat-hero { padding: 65px 0; }
+  .echat-hero h1 { font-size: clamp(55px,12vw,75px); }
+  .echat-visual { min-height: 400px; }
+  .echat-countdown-section,.echat-planned { padding-block: 70px; }
+  .echat-countdown-grid > div { min-height: 95px; padding: 9px; }
+  .echat-countdown-grid strong { font-size: clamp(30px,8vw,44px); }
+  .echat-countdown-grid span { font-size: 9px; }
+  .echat-feature-grid { grid-template-columns: 1fr; gap: 10px; }
+  .echat-feature-grid article { min-height: 210px; }
+}
+@media (prefers-reduced-motion: reduce) { .echat-sample { animation: none; } }

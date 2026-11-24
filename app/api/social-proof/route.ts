@@ -8,9 +8,9 @@ export async function GET() {
       db.prepare("SELECT COUNT(*) AS total FROM reviews WHERE published = 1").first<{ total: number }>(),
       db.prepare("SELECT value FROM site_settings WHERE key = 'satisfied_clients'").first<{ value: string }>(),
     ]);
-    return Response.json({ reviews: reviews.results || [], verifiedReviews: reviewTotal?.total || 0, satisfiedClients: count ? Number(count.value) : null }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ reviews: reviews.results || [], approvedReviews: reviewTotal?.total || 0, satisfiedClients: count ? Number(count.value) : null }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Social proof unavailable", error);
-    return Response.json({ reviews: [], verifiedReviews: null, satisfiedClients: null }, { status: 503 });
+    return Response.json({ reviews: [], approvedReviews: null, satisfiedClients: null }, { status: 503 });
   }
 }

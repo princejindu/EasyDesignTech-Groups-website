@@ -6,14 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 type Review = { id: number; name: string; context: string; quote: string };
 
-// Presentation samples only. Never store these as approved reviews or include
-// them in the verified review or satisfied client totals.
-const demoReviews: Review[] = [
-  { id: -1, name: "Sample client 01", context: "Illustrative website project", quote: "The new experience made it easier to explain what we do and helped people find the right next step." },
-  { id: -2, name: "Sample client 02", context: "Illustrative brand project", quote: "The process felt clear from the first conversation, and the design brought the whole idea together." },
-  { id: -3, name: "Sample client 03", context: "Illustrative digital project", quote: "A thoughtful team turned a complicated brief into something simple for our customers to use." },
-];
-
 function Count({ value }: { value: number }) {
   const element = useRef<HTMLSpanElement>(null);
   const [shown, setShown] = useState(0);
@@ -58,10 +50,10 @@ export function SocialProof() {
       try {
         const response = await fetch("/api/social-proof", { cache: "no-store" });
         if (!response.ok) return;
-        const data = await response.json() as { reviews: Review[]; verifiedReviews: number; satisfiedClients: number | null };
+        const data = await response.json() as { reviews: Review[]; approvedReviews: number; satisfiedClients: number | null };
         if (!active) return;
         setReviews(Array.isArray(data.reviews) ? data.reviews : []);
-        setReviewCount(Number.isSafeInteger(data.verifiedReviews) && data.verifiedReviews >= 0 ? data.verifiedReviews : null);
+        setReviewCount(Number.isSafeInteger(data.approvedReviews) && data.approvedReviews >= 0 ? data.approvedReviews : null);
         setCount(Number.isSafeInteger(data.satisfiedClients) && data.satisfiedClients !== null && data.satisfiedClients >= 0 ? data.satisfiedClients : null);
       } catch { /* Keep the last known figures if the connection is interrupted. */ }
     }
@@ -72,30 +64,28 @@ export function SocialProof() {
     return () => { active = false; window.clearInterval(timer); document.removeEventListener("visibilitychange", onVisible); };
   }, []);
 
-  const showingDemo = reviews.length === 0;
-  const visibleReviews = showingDemo ? demoReviews : reviews;
+  const visibleReviews = reviews;
   // Repeat short sets within each half so the loop has no blank area on wide screens.
-  const loopReviews = Array.from({ length: Math.max(1, Math.ceil(4 / visibleReviews.length)) }, () => visibleReviews).flat();
+  const loopReviews = visibleReviews.length ? Array.from({ length: Math.max(1, Math.ceil(4 / visibleReviews.length)) }, () => visibleReviews).flat() : [];
   const cards = (copy: string) => loopReviews.map((review, index) => <article className="review-card" key={`${copy}-${index}-${review.id}`}>
-    <div className="review-card-top"><Quote size={25} strokeWidth={1.4} aria-hidden="true" /><span className={showingDemo ? "demo-badge" : undefined}>{showingDemo ? "DEMO · NOT VERIFIED" : <><CheckCircle2 size={15} aria-hidden="true" /> VERIFIED REVIEW</>}</span></div>
+    <div className="review-card-top"><Quote size={25} strokeWidth={1.4} aria-hidden="true" /><span><CheckCircle2 size={15} aria-hidden="true" /> APPROVED CLIENT REVIEW</span></div>
     <blockquote>“{review.quote}”</blockquote>
     <div className="review-card-person"><strong>{review.name}</strong>{review.context && <span>{review.context}</span>}</div>
   </article>);
 
   return <section className="proof-section" id="reviews" aria-labelledby="proof-title">
     <div className="container">
-      <div className="proof-heading"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> CLIENT VOICES</p><h2 id="proof-title">The best work<br /><em>means something.</em></h2></div><p className="proof-intro">A moving preview of how client stories will appear. Sample cards are illustrative until approved feedback arrives.</p>
+      <div className="proof-heading"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> CLIENT VOICES</p><h2 id="proof-title">Words from people<br /><em>we have worked with.</em></h2></div><p className="proof-intro">We share client feedback only when we have the actual words and permission to publish them.</p>
       </div>
-      <div className="proof-stats" aria-label="Displayed stories and client figures" aria-live="polite">
-        <div className="proof-stat"><span className="proof-stat-index">01 / STORIES ON DISPLAY</span><strong><Count value={visibleReviews.length} /></strong><span>{showingDemo ? "Illustrative sample cards" : "Approved stories in carousel"}</span></div>
-        <div className="proof-stat"><span className="proof-stat-index">02 / APPROVED REVIEWS</span><strong>{reviewCount === null ? "—" : <Count value={reviewCount} />}</strong><span>Live total from approved records</span></div>
-        <div className="proof-stat proof-stat-accent"><span className="proof-stat-index">03 / SATISFIED CLIENTS</span><strong>{count === null ? "—" : <Count value={count} />}</strong><span>{count === null ? "Confirmed total pending" : "Confirmed client total"}</span></div>
+      <div className="proof-stats" aria-label="Client feedback figures">
+        <div className="proof-stat"><span className="proof-stat-index">01 / PUBLISHED REVIEWS</span><strong>{reviewCount === null ? "—" : <Count value={reviewCount} />}</strong><span>Approved feedback on this website</span></div>
+        <div className="proof-stat proof-stat-accent"><span className="proof-stat-index">02 / CLIENTS SERVED</span><strong>{count === null ? "—" : <Count value={count} />}</strong><span>{count === null ? "Owner confirmed total pending" : "Total confirmed by the team"}</span></div>
       </div>
-      <div className="review-marquee-top"><span><span className="live-dot" /> {showingDemo ? "DEMO STORIES · NOT VERIFIED" : "APPROVED CLIENT STORIES"}</span><button type="button" onClick={() => setPaused(value => !value)} aria-label={paused ? "Play review movement" : "Pause review movement"}>{paused ? <Play size={16} /> : <Pause size={16} />}{paused ? "Play" : "Pause"}</button></div>
-        <div className={`review-marquee${paused ? " is-paused" : ""}`} aria-label={showingDemo ? "Illustrative sample cards scrolling from right to left" : "Verified client reviews scrolling from right to left"}>
+      {visibleReviews.length ? <><div className="review-marquee-top"><span><span className="live-dot" /> APPROVED CLIENT STORIES</span><button type="button" onClick={() => setPaused(value => !value)} aria-label={paused ? "Play review movement" : "Pause review movement"}>{paused ? <Play size={16} /> : <Pause size={16} />}{paused ? "Play" : "Pause"}</button></div>
+        <div className={`review-marquee${paused ? " is-paused" : ""}`} aria-label="Approved client reviews scrolling from right to left">
           <div className="review-motion"><div className="review-group">{cards("first")}</div><div className="review-group" aria-hidden="true">{cards("second")}</div></div>
-        </div>
-        <div className="proof-bottom"><span>{showingDemo ? "THESE ARE FICTIONAL EXAMPLES, NOT CLIENT TESTIMONIALS" : "REAL WORDS FROM APPROVED CLIENTS"}</span><ReviewDialog /></div>
+        </div></> : <div className="proof-empty"><span className="proof-star" aria-hidden="true">✳</span><p>Client stories will appear here when the original feedback has been checked and approved for publication.</p></div>}
+        <div className="proof-bottom"><span>REAL FEEDBACK ONLY</span><ReviewDialog /></div>
     </div>
   </section>;
 }

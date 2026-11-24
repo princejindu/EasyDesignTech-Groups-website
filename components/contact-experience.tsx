@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { contact } from "@/lib/contact";
 import { serviceForPackage } from "@/lib/quote";
 
-const interests = ["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyHoli", "EasyProperties", "Something else"];
+const interests = ["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyLink Flex", "EasyProperties", "eChat", "Something else"];
 export function FacebookContactLink() {
   const [url, setUrl] = useState(contact.facebook);
   useEffect(() => {
@@ -136,7 +136,7 @@ export function ChatWidget() {
       <div className="chat-head"><div className="chat-head-person"><Image src="/support-agent.webp" alt="" width={58} height={58} /><div><p>EASYDESIGNTECH CARE</p><h2>How can we help?</h2><span>{stage === "human" ? "Your message is with the team." : aiEnabled ? "AI assistant, then a human handoff" : "Guided assistant, then a human handoff"}</span></div></div><button type="button" onClick={() => setOpen(false)} aria-label="Close chat"><X size={20} /></button></div>
       <div className="chat-conversation" role="log" aria-label="Conversation" aria-live="polite">
         {loading && !messages.length ? <p className="chat-empty">Opening your conversation…</p> : messages.length ? messages.map(message => <div key={message.id} className={`chat-line ${message.sender === "visitor" ? "from-visitor" : "from-team"}`}>{message.sender === "assistant" && <Image className="chat-line-avatar" src="/support-agent.webp" alt="" width={28} height={28} />}<div className={`chat-bubble chat-bubble-${message.sender}`}><small>{message.sender === "assistant" ? "VIRTUAL ASSISTANT" : message.sender === "support" ? "HUMAN SUPPORT" : "YOU"}</small><p>{message.body}</p><time>{message.created_at}</time></div></div>) : <div className="chat-welcome"><MessageCircle size={26} /><strong>Your conversation starts here.</strong><p>Tell us what you need. The team can reply in this chat.</p></div>}
-        {firstQuestion && !loading && <div className="chat-prompts" aria-label="Common topics"><span>WHAT CAN WE HELP WITH?</span>{["Easylink eSIM", "Websites and apps", "EasyHoli travel", "EasyProperties"].map(topic => <button key={topic} type="button" disabled={sending} onClick={() => void sendMessage(`I’d like help with ${topic}.`)}>{topic} <ArrowUpRight size={13} /></button>)}</div>}
+        {firstQuestion && !loading && <div className="chat-prompts" aria-label="Common topics"><span>WHAT CAN WE HELP WITH?</span>{["Easylink eSIM", "Websites and apps", "EasyLink Flex travel", "eChat coming soon"].map(topic => <button key={topic} type="button" disabled={sending} onClick={() => void sendMessage(`I’d like help with ${topic}.`)}>{topic} <ArrowUpRight size={13} /></button>)}</div>}
         {stage === "human" && <div className="chat-handoff"><strong>Passed to a person</strong><p>The team can reply in this conversation when available. Keep this browser to return to it.</p></div>}
         <div ref={endRef} />
       </div>

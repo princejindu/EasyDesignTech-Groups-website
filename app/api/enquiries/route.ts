@@ -1,7 +1,7 @@
 import { database } from "@/db/site-data";
 import { serviceForPackage } from "@/lib/quote";
 
-const allowedInterests = new Set(["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyHoli", "EasyProperties", "Something else"]);
+const allowedInterests = new Set(["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyLink Flex", "EasyProperties", "eChat", "Something else"]);
 
 export async function POST(request: Request) {
   try {

@@ -17,9 +17,10 @@ const services = [
 ];
 
 const ventures = [
-  { name: "Easylink eSIM", category: "Connectivity", description: "Simple, instant mobile connectivity for life beyond borders.", href: "https://www.geteasylink.app/", image: "/stock-esim-travelers.jpg", theme: "esim", number: "01" },
-  { name: "EasyHoli", category: "Travel", description: "Travel planning that brings the whole journey together.", href: "/easyholi", image: "/stock-travel.jpg", theme: "holi", number: "02" },
+  { name: "Easylink eSIM", category: "Connectivity", description: "Simple, instant mobile connectivity for life beyond borders.", href: "https://easylinksim.com/", image: "/stock-esim-travelers.jpg", theme: "esim", number: "01" },
+  { name: "EasyLink Flex", category: "Travel", description: "Flights, cruises and holidays with AI itinerary planning in one place.", href: "/easylinkflex", image: "/stock-travel.jpg", theme: "holi", number: "02" },
   { name: "EasyProperties", category: "Property", description: "A clearer way to discover and navigate property opportunities.", href: "/easyproperties", image: "/stock-property.jpg", theme: "property", number: "03" },
+  { name: "eChat", category: "AI assistant · Coming soon", description: "Thoughtful AI replies, chat support and conversation starters.", href: "/echat", image: "/stock-automation.jpg", theme: "chat", number: "04" },
 ];
 
 export default function Home() {
@@ -54,29 +55,30 @@ export default function Home() {
           <div className="hero-glow" aria-hidden="true" />
           <div className="container hero-layout">
             <div className="hero-copy">
-              <p className="eyebrow"><span className="eyebrow-line" /> DESIGN / TECHNOLOGY / GROWTH</p>
-              <h1 id="hero-title">Make your<br /><em>next move</em><br />matter.</h1>
-              <p className="hero-intro">Websites and apps, standout brands, content and AI workflows for businesses ready to be seen and chosen.</p>
+              <p className="eyebrow"><span className="eyebrow-line" /> CREATIVE STUDIO / DIGITAL PRODUCTS</p>
+              <h1 id="hero-title">Ideas that<br /><em>work better.</em></h1>
+              <p className="hero-intro">EasyDesignTech designs brands, builds websites and apps, creates content and connects AI workflows. One studio for the work that moves your business forward.</p>
               <div className="hero-actions">
                 <Link className="button button-light" href="/contact">Start your project <ArrowUpRight size={18} aria-hidden="true" /></Link>
                 <Link className="text-link text-link-light" href="/services">Explore services <ArrowDownRight size={18} aria-hidden="true" /></Link>
               </div>
+              <p className="hero-capabilities">STRATEGY <span /> DESIGN <span /> DEVELOPMENT <span /> AI</p>
             </div>
             <div className="hero-directory" aria-label="Choose a business">
-              <div className="directory-top"><span>CHOOSE YOUR NEXT STEP</span><span>01 / 04</span></div>
-              <Link href="/services" className="directory-row"><span className="directory-index">01</span><span><strong>EasyDesignTech</strong><small>Creative and digital services</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
-              <a href="https://www.geteasylink.app/" className="directory-row"><span className="directory-index">02</span><span><strong>Easylink eSIM</strong><small>Connectivity</small></span><MoveUpRight size={22} aria-hidden="true" /></a>
-              <Link href="/easyholi" className="directory-row"><span className="directory-index">03</span><span><strong>EasyHoli</strong><small>Travel</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
-              <Link href="/easyproperties" className="directory-row"><span className="directory-index">04</span><span><strong>EasyProperties</strong><small>Property</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
-              <div className="directory-bottom"><Link href="/pricing">SEE STARTING PRICES <ArrowUpRight size={14} /></Link><span className="directory-asterisk">✳</span></div>
+              <div className="directory-top"><span>EXPLORE OUR BUSINESSES</span><span>01 / 04</span></div>
+              <a href="https://easylinksim.com/" className="directory-row" target="_blank" rel="noopener noreferrer"><span className="directory-index">01</span><span><strong>Easylink eSIM</strong><small>Travel connectivity</small></span><MoveUpRight size={22} aria-hidden="true" /></a>
+              <Link href="/easylinkflex" className="directory-row"><span className="directory-index">02</span><span><strong>EasyLink Flex</strong><small>Flights, cruises, holidays and AI itineraries</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
+              <Link href="/easyproperties" className="directory-row"><span className="directory-index">03</span><span><strong>EasyProperties</strong><small>Property discovery</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
+              <Link href="/echat" className="directory-row"><span className="directory-index">04</span><span><strong>eChat</strong><small>AI reply and chat assistance · Coming soon</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
+              <div className="directory-bottom"><Link href="/businesses">MEET THE FAMILY <ArrowUpRight size={14} /></Link><span className="directory-asterisk" aria-hidden="true">✳</span></div>
             </div>
           </div>
-          <div className="hero-bottom container"><span>DESIGN. TECHNOLOGY. POSSIBILITY.</span><span>SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span></div>
+          <div className="hero-bottom container"><span>BUILT AROUND YOUR NEXT IDEA.</span><span>SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span></div>
         </section>
 
         <section className="services-section services-showcase" id="services" aria-labelledby="services-title">
           <div className="container">
-            <div className="section-heading services-heading"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> WHAT WE DO</p><h2 id="services-title">Ideas deserve<br /><em>good execution.</em></h2></div><p>From the first sketch to the final detail, we bring design, technology and storytelling together to make the whole experience work harder.</p></div>
+            <div className="section-heading services-heading"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> WHAT WE DO</p><h2 id="services-title">Clear ideas.<br /><em>Useful results.</em></h2></div><p>Choose the specialist help you need, from your first brand impression to a working digital product and smarter daily systems.</p></div>
             <div className="service-grid">
               {services.map((service) => <Link className={`service-card service-card-${service.id}`} href={service.href} key={service.number} aria-label={`Explore ${service.name}`}>
                 <div className="service-card-art" aria-hidden="true"><Image src={service.image} alt="" fill sizes="(max-width: 760px) 100vw, 50vw" /></div>
@@ -93,7 +95,7 @@ export default function Home() {
             <div className="section-heading ventures-heading"><div><p className="eyebrow"><span className="eyebrow-line" /> OUR BUSINESSES</p><h2 id="ventures-title">Different worlds.<br /><em>One way forward.</em></h2></div><div className="carousel-controls"><button type="button" onClick={() => move(-1)} disabled={!canScrollLeft} aria-label="Scroll businesses left"><ArrowLeft size={20} /></button><button type="button" onClick={() => move(1)} disabled={!canScrollRight} aria-label="Scroll businesses right"><ArrowRight size={20} /></button></div></div>
             <div className="venture-track" ref={track}>
               {ventures.map((venture) => <a key={venture.name} href={venture.href} className={`venture-card ${venture.theme}`} aria-label={`Explore ${venture.name}`} onPointerMove={event => { if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--tilt-x", `${((event.clientY - rect.top) / rect.height - .5) * -3}deg`); event.currentTarget.style.setProperty("--tilt-y", `${((event.clientX - rect.left) / rect.width - .5) * 3}deg`); }} onPointerLeave={event => { event.currentTarget.style.setProperty("--tilt-x", "0deg"); event.currentTarget.style.setProperty("--tilt-y", "0deg"); }}>
-                <img src={venture.image} alt={venture.theme === "esim" ? "Travellers looking at a phone while exploring a city" : venture.theme === "property" ? "Bright modern apartment interior" : "Aerial view of a blue coastline"} />
+                <img src={venture.image} alt={venture.theme === "esim" ? "Travellers looking at a phone while exploring a city" : venture.theme === "property" ? "Bright modern apartment interior" : venture.theme === "chat" ? "Abstract digital workflow visual" : "Aerial view of a blue coastline"} />
                 <div className="venture-overlay"><div className="venture-meta"><span>{venture.number} / {venture.category}</span><span className="venture-icon"><ArrowUpRight size={20} aria-hidden="true" /></span></div><div><h3>{venture.name}</h3><p>{venture.description}</p><span className="venture-action">Explore business <ArrowRight size={17} aria-hidden="true" /></span></div></div>
               </a>)}
             </div>

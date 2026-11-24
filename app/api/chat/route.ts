@@ -24,8 +24,9 @@ function modelKey() {
 }
 function guidedReply(body: string) {
   const query = body.toLowerCase();
-  if (/e.?sim|easy.?link|mobile data|roaming|connectivity/.test(query)) return "For Easylink eSIM plans and activation, visit geteasylink.app. Our team can help with other connectivity questions.";
-  if (/easy.?holi|travel|trip|holiday|flight|hotel/.test(query)) return "EasyHoli is our travel experience in development. Tell the team what kind of trip or partnership you have in mind.";
+  if (/e.?chat|chat assist|reply suggestion|conversation starter/.test(query)) return "eChat is an AI reply and chat assistant in development. Its launch countdown will appear on the eChat page once a date is confirmed. What would you like to know?";
+  if (/easy.?link flex|travel|trip|holiday|flight|hotel|cruise|itinerary/.test(query)) return "EasyLink Flex is our travel booking experience in development for flights, cruises, holidays and AI itinerary planning. Tell the team what you have in mind.";
+  if (/e.?sim|easy.?link|mobile data|roaming|connectivity/.test(query)) return "For Easylink eSIM plans and activation, visit https://easylinksim.com/. Our team can help with other connectivity questions.";
   if (/propert|house|home|real estate|listing/.test(query)) return "EasyProperties is our property discovery concept. Our team can follow up about your property enquiry.";
   if (/brand|logo|graphic|identity/.test(query)) return "Our branding and design service covers visual identity and graphics. A project brief will help our team advise you.";
   if (/social|content|marketing/.test(query)) return "Our social media and content service can help shape your message and creative assets. Share your goals with our team.";
@@ -39,7 +40,7 @@ async function aiReply(body: string, key: string) {
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "gpt-5-mini", store: false, max_output_tokens: 220,
-      instructions: "You are EasyDesignTech's clearly identified virtual customer care assistant. Reply to this one visitor message in at most 70 words, warmly and concretely. EasyDesignTech offers web and apps, branding and design, social media and content, and AI automation and data. Its businesses are Easylink eSIM at https://www.geteasylink.app/ (live), EasyHoli travel (concept), and EasyProperties property discovery (concept). Do not invent prices, availability, customer results, commitments, or staff response times. If uncertain, say a person will follow up. Do not claim to be human. Do not ask for payment or sensitive data. Do not say you have already transferred the chat; the site does that after your reply.",
+      instructions: "You are EasyDesignTech's clearly identified virtual customer care assistant. Reply to this one visitor message in at most 70 words, warmly and concretely. EasyDesignTech offers web and apps, branding and design, social media and content, and AI automation and data. Its businesses are Easylink eSIM at https://easylinksim.com/ (live), EasyLink Flex for flights, cruises, holidays and AI itinerary planning (in development), EasyProperties property discovery (in development), and eChat AI text reply and chat assistance (coming soon). Do not invent a launch date, prices, availability, customer results, commitments, or staff response times. If uncertain, say a person will follow up. Do not claim to be human. Do not ask for payment or sensitive data. Do not say you have already transferred the chat; the site does that after your reply.",
       input: [{ role: "user", content: body }],
     }), signal: AbortSignal.timeout(8500),
   });

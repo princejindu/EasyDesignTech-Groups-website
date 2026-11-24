@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "EasyDesignTech | Design, build and grow what comes next",
-  description: "Explore EasyDesignTech services and the EasyProperties, EasyHoli and Easylink eSIM businesses.",
+  description: "Explore EasyDesignTech creative and digital services, Easylink eSIM, EasyLink Flex travel, EasyProperties and eChat.",
   icons: {
     icon: "/brand-icon.png",
     shortcut: "/brand-icon.png",

@@ -1,6 +1,6 @@
 # EasyDesignTech Groups website
 
-The EasyDesignTech hub connects the studio's services with Easylink eSIM, EasyHoli and EasyProperties. It includes dedicated service and business pages, an enquiry form, reviews, a guided customer care chat and a private owner studio.
+The EasyDesignTech hub connects the studio's services with Easylink eSIM, EasyLink Flex, EasyProperties and eChat. It includes dedicated service and business pages, an enquiry form, an approved client review carousel, a guided customer care chat and a private owner studio. eChat's countdown is configured in the studio once a launch date is confirmed.
 
 ## Run locally
 
