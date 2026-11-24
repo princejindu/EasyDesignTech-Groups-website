@@ -7,14 +7,13 @@ export async function GET(request: Request) {
   if (!isSiteOwner(request)) return denied();
   try {
     const db = database();
-    const [enquiries, reviews, count, settings, launch] = await Promise.all([
+    const [enquiries, reviews, count, settings] = await Promise.all([
       db.prepare("SELECT id, name, email, phone, interest, message, status, created_at FROM enquiries ORDER BY created_at DESC LIMIT 100").all<Enquiry>(),
       db.prepare("SELECT id, name, context, quote, published, created_at FROM reviews ORDER BY created_at DESC LIMIT 100").all<Review>(),
       db.prepare("SELECT value FROM site_settings WHERE key = 'satisfied_clients'").first<{ value: string }>(),
       db.prepare("SELECT key, value FROM site_settings WHERE key LIKE 'social_%'").all<{ key: string; value: string }>(),
-      db.prepare("SELECT value FROM site_settings WHERE key = 'echat_launch_at'").first<{ value: string }>(),
     ]);
-    return Response.json({ enquiries: enquiries.results || [], reviews: reviews.results || [], satisfiedClients: count ? Number(count.value) : null, socialLinks: mergeSocialLinks(settings.results || []), echatLaunchAt: launch?.value || null }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ enquiries: enquiries.results || [], reviews: reviews.results || [], satisfiedClients: count ? Number(count.value) : null, socialLinks: mergeSocialLinks(settings.results || []) }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Studio read failed", error);
     return Response.json({ error: "Inbox unavailable" }, { status: 503 });
@@ -32,12 +31,6 @@ export async function POST(request: Request) {
       const count = Number(data.count);
       if (!Number.isSafeInteger(count) || count < 0 || count > 1000000) return Response.json({ error: "Enter a verified whole number" }, { status: 400 });
       await db.prepare("INSERT INTO site_settings (key, value) VALUES ('satisfied_clients', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").bind(String(count)).run();
-    } else if (data.action === "echat_launch") {
-      const value = String(data.launchAt || "").trim();
-      const timestamp = Date.parse(value);
-      if (value && (!/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(value) || !Number.isFinite(timestamp) || timestamp <= Date.now())) return Response.json({ error: "Choose a future launch date" }, { status: 400 });
-      if (value) await db.prepare("INSERT INTO site_settings (key, value) VALUES ('echat_launch_at', ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value").bind(value).run();
-      else await db.prepare("DELETE FROM site_settings WHERE key = 'echat_launch_at'").run();
     } else if (data.action === "social_links") {
       const links = data.links;
       if (!links || typeof links !== "object" || Array.isArray(links)) return Response.json({ error: "Check the social links" }, { status: 400 });

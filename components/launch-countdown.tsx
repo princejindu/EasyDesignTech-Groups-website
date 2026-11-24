@@ -2,32 +2,34 @@
 
 import { useEffect, useState } from "react";
 
+const week = 7 * 24 * 60 * 60 * 1000;
+const anchor = Date.UTC(2026, 10, 23);
 const units = ["days", "hours", "minutes", "seconds"] as const;
 
-export function LaunchCountdown() {
-  const [launchAt, setLaunchAt] = useState<string | null>(null);
+function useWeeklyTimer() {
   const [now, setNow] = useState<number | null>(null);
-
   useEffect(() => {
-    let active = true;
-    fetch("/api/echat", { cache: "no-store" })
-      .then(response => response.ok ? response.json() as Promise<{ launchAt: string | null }> : null)
-      .then(data => { if (active) setLaunchAt(data?.launchAt || null); })
-      .catch(() => {});
     const tick = () => setNow(Date.now());
     tick();
     const interval = window.setInterval(tick, 1000);
-    return () => { active = false; window.clearInterval(interval); };
+    return () => window.clearInterval(interval);
   }, []);
+  if (now === null) return null;
+  const elapsed = ((now - anchor) % week + week) % week;
+  const remaining = Math.ceil((week - elapsed) / 1000);
+  return [Math.floor(remaining / 86400), Math.floor(remaining % 86400 / 3600), Math.floor(remaining % 3600 / 60), remaining % 60];
+}
 
-  const target = launchAt ? Date.parse(launchAt) : NaN;
-  const remaining = Number.isFinite(target) && now !== null ? Math.max(0, Math.floor((target - now) / 1000)) : null;
-  const values = remaining === null ? [null, null, null, null] : [Math.floor(remaining / 86400), Math.floor(remaining % 86400 / 3600), Math.floor(remaining % 3600 / 60), remaining % 60];
-  const launched = remaining === 0;
+export function CompactWeeklyCountdown({ product }: { product: string }) {
+  const values = useWeeklyTimer();
+  return <div className="echat-compact-countdown" role="timer" aria-label={`${product} repeating seven day countdown`} aria-live="off"><span>COMING SOON / WEEKLY COUNTDOWN</span><strong>{units.map((unit, index) => <span key={unit}>{values === null ? "––" : String(values[index]).padStart(2, "0")}<small>{unit.slice(0, 1).toUpperCase()}</small></span>)}</strong></div>;
+}
 
-  return <div className="echat-countdown" aria-label="eChat launch countdown">
-    <div className="echat-countdown-heading"><span>LAUNCH COUNTDOWN</span><strong>{launchAt && !launched ? new Intl.DateTimeFormat("en-GB", { dateStyle: "long", timeStyle: "short", timeZone: "Europe/London" }).format(target) + " UK time" : launched ? "The target date has arrived" : "Launch date to be announced"}</strong></div>
-    <div className="echat-countdown-grid" role="timer" aria-live="off">{units.map((unit, index) => <div key={unit}><strong>{values[index] === null ? "––" : String(values[index]).padStart(2, "0")}</strong><span>{unit}</span></div>)}</div>
-    <p>{launched ? "We are preparing the latest launch details. Please contact us for an update." : launchAt ? "Time remaining until the announced launch target." : "We will start the countdown here when a launch date is confirmed."}</p>
+export function WeeklyCountdown({ product }: { product: string }) {
+  const values = useWeeklyTimer();
+  return <div className="echat-countdown" aria-label={`${product} repeating seven day countdown`}>
+    <div className="echat-countdown-heading"><span>{product.toUpperCase()} / COMING SOON</span><strong>Seven day<br />countdown.</strong></div>
+    <div className="echat-countdown-grid" role="timer" aria-live="off">{units.map((unit, index) => <div key={unit}><strong>{values === null ? "––" : String(values[index]).padStart(2, "0")}</strong><span>{unit}</span></div>)}</div>
+    <p>This timer resets every seven days. A launch date has not been announced.</p>
   </div>;
 }

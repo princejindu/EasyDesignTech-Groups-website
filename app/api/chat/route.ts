@@ -24,7 +24,7 @@ function modelKey() {
 }
 function guidedReply(body: string) {
   const query = body.toLowerCase();
-  if (/e.?chat|chat assist|reply suggestion|conversation starter/.test(query)) return "eChat is an AI reply and chat assistant in development. Its launch countdown will appear on the eChat page once a date is confirmed. What would you like to know?";
+  if (/e.?chat|chat assist|reply suggestion|conversation starter/.test(query)) return "eChat is an AI reply and chat assistant in development. Its page has a repeating seven day countdown, while a launch date has not been announced. What would you like to know?";
   if (/easy.?link flex|travel|trip|holiday|flight|hotel|cruise|itinerary/.test(query)) return "EasyLink Flex is our travel booking experience in development for flights, cruises, holidays and AI itinerary planning. Tell the team what you have in mind.";
   if (/e.?sim|easy.?link|mobile data|roaming|connectivity/.test(query)) return "For Easylink eSIM plans and activation, visit https://easylinksim.com/. Our team can help with other connectivity questions.";
   if (/propert|house|home|real estate|listing/.test(query)) return "EasyProperties is our property discovery concept. Our team can follow up about your property enquiry.";

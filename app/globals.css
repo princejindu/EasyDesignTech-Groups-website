@@ -1490,7 +1490,7 @@ body { font-family: 'Geist', Arial, sans-serif; -webkit-font-smoothing: antialia
 .business-echat h2 em,.echat-hero h1 em { color: #d7fb66; }
 .business-echat-grid > div:last-child > p:not(.eyebrow) { max-width: 610px; color: #c4d6dc; font-size: 18px; line-height: 1.55; margin-bottom: 27px; }
 
-/* eChat is announced honestly until the owner supplies a launch date. */
+/* The coming soon timers repeat weekly without implying a launch date. */
 .echat-page { color: #fff; }
 .echat-hero { overflow: hidden; padding: 90px 0 85px; background: radial-gradient(circle at 75% 25%,#28506c,transparent 34%),#0d1d32; }
 .echat-hero-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,.9fr); gap: clamp(35px,6vw,90px); align-items: center; }
@@ -1508,6 +1508,8 @@ body { font-family: 'Geist', Arial, sans-serif; -webkit-font-smoothing: antialia
 .echat-visual-mark span { color: #d7fb66; }
 @keyframes echat-float { to { translate: 0 -11px; } }
 .echat-countdown-section { background: #d7fb66; color: #12253a; padding: 76px 0; }
+.property-countdown-section { background: #decab4; color: #2c2a2a; }
+.property-countdown-section .echat-countdown-grid > div { background: #283b43; }
 .echat-countdown { display: grid; grid-template-columns: minmax(220px,.8fr) minmax(0,1.2fr); gap: 20px 55px; align-items: end; }
 .echat-countdown-heading span { display: block; font-size: 11px; font-weight: 800; letter-spacing: .15em; margin-bottom: 16px; }
 .echat-countdown-heading strong { display: block; font-size: clamp(30px,3.1vw,48px); line-height: 1.06; letter-spacing: -.055em; }
@@ -1525,6 +1527,11 @@ body { font-family: 'Geist', Arial, sans-serif; -webkit-font-smoothing: antialia
 .echat-feature-grid h3 { margin: 12px 0 10px; font-size: 27px; letter-spacing: -.05em; }
 .echat-feature-grid p { margin: 0; color: #526763; font-size: 15px; line-height: 1.5; }
 .echat-planned-note { margin: 25px 0 0; color: #5e716a; font-size: 13px; }
+.echat-compact-countdown { border-top: 1px solid #ffffff90; padding: 12px 0; margin: -4px 0 17px; }
+.echat-compact-countdown > span { display: block; font-size: 10px; font-weight: 800; letter-spacing: .1em; color: #d7fb66; }
+.echat-compact-countdown strong { display: flex; gap: 11px; margin-top: 10px; font-size: 20px; font-variant-numeric: tabular-nums; }
+.echat-compact-countdown strong span { display: inline-flex; gap: 3px; align-items: baseline; }
+.echat-compact-countdown small { font-size: 9px; color: #d7fb66; }
 
 @media (max-width: 1080px) {
   .hero-layout { grid-template-columns: minmax(0,1fr) minmax(330px,.9fr); gap: 28px; }

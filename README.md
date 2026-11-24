@@ -1,6 +1,6 @@
 # EasyDesignTech Groups website
 
-The EasyDesignTech hub connects the studio's services with Easylink eSIM, EasyLink Flex, EasyProperties and eChat. It includes dedicated service and business pages, an enquiry form, an approved client review carousel, a guided customer care chat and a private owner studio. eChat's countdown is configured in the studio once a launch date is confirmed.
+The EasyDesignTech hub connects the studio's services with Easylink eSIM, EasyLink Flex, EasyProperties and eChat. It includes dedicated service and business pages, an enquiry form, an approved client review carousel, a guided customer care chat and a private owner studio. eChat and EasyProperties use a shared seven day countdown that resets every Monday at 00:00 UTC. It is a repeating timer, not a stated launch date.
 
 ## Run locally
 

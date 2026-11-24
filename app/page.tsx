@@ -8,6 +8,7 @@ import { SiteHeader, SiteFooter } from "@/components/site-shell";
 import { EnquiryForm, FacebookContactLink } from "@/components/contact-experience";
 import { contact } from "@/lib/contact";
 import { SocialProof } from "@/components/social-proof";
+import { CompactWeeklyCountdown } from "@/components/launch-countdown";
 
 const services = [
   { number: "01", name: "Web and app development", detail: "Thoughtful websites, useful platforms and mobile experiences built to turn a bold idea into something people love to use.", features: ["Websites and commerce", "Web apps and portals", "Mobile product design"], icon: Braces, id: "web-apps", href: "/services/web-apps", image: "/stock-web.jpg" },
@@ -19,7 +20,7 @@ const services = [
 const ventures = [
   { name: "Easylink eSIM", category: "Connectivity", description: "Simple, instant mobile connectivity for life beyond borders.", href: "https://easylinksim.com/", image: "/stock-esim-travelers.jpg", theme: "esim", number: "01" },
   { name: "EasyLink Flex", category: "Travel", description: "Flights, cruises and holidays with AI itinerary planning in one place.", href: "/easylinkflex", image: "/stock-travel.jpg", theme: "holi", number: "02" },
-  { name: "EasyProperties", category: "Property", description: "A clearer way to discover and navigate property opportunities.", href: "/easyproperties", image: "/stock-property.jpg", theme: "property", number: "03" },
+  { name: "EasyProperties", category: "Property · Coming soon", description: "A clearer way to discover and navigate property opportunities.", href: "/easyproperties", image: "/stock-property.jpg", theme: "property", number: "03" },
   { name: "eChat", category: "AI assistant · Coming soon", description: "Thoughtful AI replies, chat support and conversation starters.", href: "/echat", image: "/stock-automation.jpg", theme: "chat", number: "04" },
 ];
 
@@ -95,8 +96,8 @@ export default function Home() {
             <div className="section-heading ventures-heading"><div><p className="eyebrow"><span className="eyebrow-line" /> OUR BUSINESSES</p><h2 id="ventures-title">Different worlds.<br /><em>One way forward.</em></h2></div><div className="carousel-controls"><button type="button" onClick={() => move(-1)} disabled={!canScrollLeft} aria-label="Scroll businesses left"><ArrowLeft size={20} /></button><button type="button" onClick={() => move(1)} disabled={!canScrollRight} aria-label="Scroll businesses right"><ArrowRight size={20} /></button></div></div>
             <div className="venture-track" ref={track}>
               {ventures.map((venture) => <a key={venture.name} href={venture.href} className={`venture-card ${venture.theme}`} aria-label={`Explore ${venture.name}`} onPointerMove={event => { if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--tilt-x", `${((event.clientY - rect.top) / rect.height - .5) * -3}deg`); event.currentTarget.style.setProperty("--tilt-y", `${((event.clientX - rect.left) / rect.width - .5) * 3}deg`); }} onPointerLeave={event => { event.currentTarget.style.setProperty("--tilt-x", "0deg"); event.currentTarget.style.setProperty("--tilt-y", "0deg"); }}>
-                <img src={venture.image} alt={venture.theme === "esim" ? "Travellers looking at a phone while exploring a city" : venture.theme === "property" ? "Bright modern apartment interior" : venture.theme === "chat" ? "Abstract digital workflow visual" : "Aerial view of a blue coastline"} />
-                <div className="venture-overlay"><div className="venture-meta"><span>{venture.number} / {venture.category}</span><span className="venture-icon"><ArrowUpRight size={20} aria-hidden="true" /></span></div><div><h3>{venture.name}</h3><p>{venture.description}</p><span className="venture-action">Explore business <ArrowRight size={17} aria-hidden="true" /></span></div></div>
+                <img src={venture.image} alt={venture.theme === "esim" ? "Travellers looking at a phone while exploring a city" : venture.theme === "property" ? "Bright modern apartment interior" : venture.theme === "chat" ? "Colleagues reviewing work at a laptop" : "Aerial view of a blue coastline"} />
+                <div className="venture-overlay"><div className="venture-meta"><span>{venture.number} / {venture.category}</span><span className="venture-icon"><ArrowUpRight size={20} aria-hidden="true" /></span></div><div><h3>{venture.name}</h3><p>{venture.description}</p>{(venture.theme === "chat" || venture.theme === "property") && <CompactWeeklyCountdown product={venture.name} />}<span className="venture-action">Explore business <ArrowRight size={17} aria-hidden="true" /></span></div></div>
               </a>)}
             </div>
             <p className="venture-hint">Browse the businesses <span aria-hidden="true">→</span></p>
