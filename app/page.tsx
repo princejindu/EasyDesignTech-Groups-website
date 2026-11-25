@@ -17,6 +17,13 @@ const services = [
   { number: "04", name: "AI automation and data", detail: "Smarter workflows, clearer dashboards and better connected customer journeys that make everyday work easier.", features: ["AI workflows", "Dashboards", "Customer systems"], icon: Compass, id: "automation", href: "/services/automation", image: "/stock-automation.jpg" },
 ];
 
+const heroScenes = [
+  { id: "web", label: "Web & apps", title: "Digital experiences", description: "Websites and apps built to look sharp, feel simple and work hard.", image: "/stock-web.jpg", href: "/services/web-apps", icon: Braces },
+  { id: "brand", label: "Brand & design", title: "Distinctive brands", description: "Identity and design that make your business recognisable.", image: "/stock-branding.jpg", href: "/services/branding", icon: Layers3 },
+  { id: "content", label: "Content & motion", title: "Stories that move", description: "Social content, campaigns and motion made with purpose.", image: "/stock-video.jpg", href: "/services/social-content", icon: Sparkles },
+  { id: "ai", label: "AI & automation", title: "Smarter systems", description: "Useful AI workflows and data tools for the way you work.", image: "/stock-automation.jpg", href: "/services/automation", icon: Compass },
+];
+
 const ventures = [
   { name: "Easylink eSIM", category: "Connectivity", description: "Simple, instant mobile connectivity for life beyond borders.", href: "https://easylinksim.com/", image: "/stock-esim-travelers.jpg", theme: "esim", number: "01" },
   { name: "EasyLink Flex", category: "Travel", description: "Flights, cruises and holidays with AI itinerary planning in one place.", href: "/easylinkflex", image: "/stock-travel.jpg", theme: "holi", number: "02" },
@@ -26,6 +33,8 @@ const ventures = [
 
 export default function Home() {
   const track = useRef<HTMLDivElement>(null);
+  const [activeHero, setActiveHero] = useState(2);
+  const ActiveHeroIcon = heroScenes[activeHero].icon;
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   useEffect(() => {
@@ -51,25 +60,33 @@ export default function Home() {
     <div className="site-shell">
       <SiteHeader />
       <main>
-        <section className="hero home-hero editorial-hero" aria-labelledby="hero-title">
-          <div className="editorial-atmosphere" aria-hidden="true" />
-          <div className="container editorial-stage">
-            <div className="editorial-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><span>BRAND · DIGITAL · CONTENT · AI</span></div>
-            <div className="editorial-copy">
-              <p className="editorial-kicker">A CREATIVE STUDIO FOR WHAT COMES NEXT</p>
-              <h1 id="hero-title"><span>YOUR NEXT</span><span>BIG IDEA.</span><span>MADE <strong>REAL.</strong></span></h1>
-              <p>We design brands, build websites and apps, create content and put AI to work. Tell us where you want to go. We will help you make it happen.</p>
-              <div className="editorial-actions"><Link className="editorial-primary" href="/contact">Start a project <ArrowUpRight size={18} aria-hidden="true" /></Link><Link className="editorial-secondary" href="/services">Explore our services <ArrowDownRight size={18} aria-hidden="true" /></Link></div>
+        <section className={`hero home-hero immersive-hero immersive-hero-${heroScenes[activeHero].id}`} aria-labelledby="hero-title" onPointerMove={event => {
+          if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          const rect = event.currentTarget.getBoundingClientRect();
+          event.currentTarget.style.setProperty("--hero-pointer-x", `${event.clientX - rect.left}px`);
+          event.currentTarget.style.setProperty("--hero-pointer-y", `${event.clientY - rect.top}px`);
+        }}>
+          <div className="immersive-scene" key={heroScenes[activeHero].id} aria-hidden="true"><Image src={heroScenes[activeHero].image} alt="" fill priority={activeHero === 2} sizes="100vw" /></div>
+          <div className="immersive-atmosphere" aria-hidden="true"><span className="immersive-orbit" /><span className="immersive-pointer" /></div>
+          <div className="container immersive-stage">
+            <div className="immersive-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><span>DESIGN · DEVELOPMENT · AI</span></div>
+            <div className="immersive-main">
+              <div className="immersive-copy">
+                <p className="immersive-kicker"><span /> A STUDIO FOR WHAT COMES NEXT</p>
+                <h1 id="hero-title"><span>MAKE THE</span><span><em>NEXT</em> MOVE.</span></h1>
+                <p className="immersive-intro">We build brands, websites, apps, content and smart systems that help your business stand out and move forward.</p>
+                <div className="immersive-actions"><Link className="immersive-primary" href="/contact">Start a project <ArrowUpRight size={19} aria-hidden="true" /></Link><Link className="immersive-secondary" href="/services">Explore services <ArrowDownRight size={19} aria-hidden="true" /></Link></div>
+              </div>
+              <div className="immersive-feature" aria-live="polite">
+                <Link key={heroScenes[activeHero].id} href={heroScenes[activeHero].href} className="immersive-feature-panel">
+                  <span className="immersive-feature-top"><span>IN FOCUS / {String(activeHero + 1).padStart(2, "0")}</span><ActiveHeroIcon size={23} strokeWidth={1.4} aria-hidden="true" /></span>
+                  <strong>{heroScenes[activeHero].title}</strong>
+                  <p>{heroScenes[activeHero].description}</p>
+                  <span className="immersive-feature-link">Explore this service <ArrowUpRight size={17} aria-hidden="true" /></span>
+                </Link>
+              </div>
             </div>
-            <div className="editorial-showcase" aria-label="Explore our creative and digital services">
-              {services.map(service => <Link className={`editorial-service-card editorial-service-${service.id}`} href={service.href} key={service.id}>
-                <Image src={service.image} alt="" fill sizes="(max-width: 600px) 75vw, (max-width: 850px) 42vw, 26vw" />
-                <span className="editorial-card-shade" aria-hidden="true" />
-                <span className="editorial-card-top"><span>EASYDESIGNTECH / SERVICES</span><ArrowUpRight size={20} aria-hidden="true" /></span>
-                <strong>{service.name}</strong>
-              </Link>)}
-            </div>
-            <div className="editorial-endline"><span>FROM FIRST SPARK TO THE FINISHED EXPERIENCE</span><Link href="/businesses">Explore our businesses <ArrowUpRight size={17} aria-hidden="true" /></Link></div>
+            <div className="immersive-switcher"><div className="immersive-switcher-label"><span>EXPLORE OUR SERVICES</span><small>SELECT A FOCUS</small></div><div className="immersive-options" role="group" aria-label="Change the featured service">{heroScenes.map((scene, index) => <button type="button" key={scene.id} className={activeHero === index ? "is-active" : ""} aria-pressed={activeHero === index} onClick={() => setActiveHero(index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{scene.label}</strong><ArrowUpRight size={16} aria-hidden="true" /></button>)}</div></div>
           </div>
         </section>
 
