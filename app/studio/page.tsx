@@ -23,6 +23,7 @@ export default function Studio() {
   const [count, setCount] = useState("");
   const [socialLinks, setSocialLinks] = useState<Record<SocialPlatform, string>>(emptySocial);
   const [emailConfigured, setEmailConfigured] = useState(false);
+  const [geminiConfigured, setGeminiConfigured] = useState(false);
   const [threads, setThreads] = useState<Thread[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
@@ -44,10 +45,10 @@ export default function Studio() {
       const response = await fetch("/api/studio", { cache: "no-store" });
       if (response.status === 403) { setState("denied"); return; }
       if (!response.ok) throw new Error();
-      const data = await response.json() as { enquiries: Enquiry[]; reviews: Review[]; satisfiedClients: number | null; socialLinks: Record<SocialPlatform, string>; emailNotificationsConfigured: boolean };
+      const data = await response.json() as { enquiries: Enquiry[]; reviews: Review[]; satisfiedClients: number | null; socialLinks: Record<SocialPlatform, string>; emailNotificationsConfigured: boolean; geminiConfigured: boolean };
       setEnquiries(data.enquiries || []); setReviews(data.reviews || []);
       setCount(data.satisfiedClients === null ? "" : String(data.satisfiedClients));
-      setSocialLinks(data.socialLinks || emptySocial); setEmailConfigured(Boolean(data.emailNotificationsConfigured)); setState("ready");
+      setSocialLinks(data.socialLinks || emptySocial); setEmailConfigured(Boolean(data.emailNotificationsConfigured)); setGeminiConfigured(Boolean(data.geminiConfigured)); setState("ready");
       void loadChat();
     } catch { setState("error"); }
   }, [loadChat]);
@@ -90,7 +91,8 @@ export default function Studio() {
     {state === "denied" && <div className="studio-message"><h2>Owner access required</h2><p>Sign in with the account that owns this website to manage enquiries, chats, social links and client stories.</p></div>}
     {state === "error" && <div className="studio-message"><h2>The studio is unavailable</h2><p>Try refreshing this page.</p></div>}
     {state === "ready" && <>
-      <div className="studio-email-status" role="status"><strong>Email notifications: {emailConfigured ? "Sending service configured" : "Setup needed"}</strong><p>{emailConfigured ? "New enquiries and chat handoffs are emailed to info@easydesigntech.com. Acknowledgements go to visitors who provide an email address. Check a test message to confirm delivery." : "Enquiries and chats are saved here. Email notifications and customer acknowledgements need a verified sending domain and a Resend API key in the Site secret settings."}</p></div>
+      <div className="studio-email-status" role="status"><strong>Email notifications: {emailConfigured ? "Key configured" : "Setup needed"}</strong><p>{emailConfigured ? "The Site will submit new enquiries and chat handoffs to info@easydesigntech.com and acknowledgements to visitors. Send a test and check both mailboxes and the provider delivery log to confirm delivery." : "Enquiries and chats are saved here. Email notifications and customer acknowledgements need a verified sending domain and a Resend API key in the Site secret settings."}</p></div>
+      <div className="studio-email-status" role="status"><strong>Gemini chat: {geminiConfigured ? "Key configured" : "Setup needed"}</strong><p>{geminiConfigured ? "The chat uses Gemini Flash Lite for published service questions. Test a question and an unknown request to confirm both the answer and contact form." : "Add a fresh GEMINI_API_KEY in the Site secret settings. Until then, visitors can send an enquiry directly through the chat contact form."}</p></div>
       <div className="studio-summary"><div><span>NEW ENQUIRIES</span><strong>{enquiries.filter(item => item.status === "new").length}</strong></div><div><span>CHAT CONVERSATIONS</span><strong>{threads.length}</strong></div><div><span>OWNER CONFIRMED CLIENT TOTAL</span><strong>{count || "Not set"}</strong></div></div>
       <p className="studio-notice" aria-live="polite">{notice}</p>
       <section className="studio-section" id="chats"><div className="studio-section-top"><div><p>01 / LIVE CHAT</p><h2>Conversations</h2></div><span>New messages appear while this page is open</span></div>

@@ -1,12 +1,15 @@
 import { env } from "cloudflare:workers";
 import { database } from "@/db/site-data";
 import { sendCustomerAcknowledgement, sendOwnerNotification } from "@/lib/email-notifications";
+import { askGemini, containsContactDetails } from "@/lib/gemini-chat";
 
 const cookieName = "edt_chat";
 type Thread = { id: number; status: string; visitor_name: string; visitor_email: string };
 type ChatMessage = { id: number; sender: "visitor" | "assistant" | "support"; body: string; created_at: string };
-const greeting = "Hello, I’m the EasyDesignTech virtual assistant. Tell me what you’re looking for, and I’ll guide you and pass your message to a person on our team.";
-const handoff = "I’ve passed your message to our team. A person can reply here when available. You can leave an email below if you’d like a follow up outside this chat.";
+const greeting = "Hello, I’m the EasyDesignTech virtual assistant. Ask me about our published services and common questions. For a personal enquiry, use the contact form. Please do not share private details in the chat question.";
+const handoff = "I can’t give you a reliable answer from our published information. Please leave your name, email and message in the contact form below so our team can follow up.";
+const limitHandoff = "The virtual assistant has reached its usage limit right now. Please leave your name, email and message in the contact form below so our team can follow up.";
+const unavailableHandoff = "The virtual assistant is unavailable right now. Please leave your name, email and message in the contact form below so our team can follow up.";
 
 async function hashToken(token: string) {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(token));
@@ -20,36 +23,8 @@ async function existingThread(request: Request) {
   if (!/^[a-f0-9]{64}$/.test(token)) return null;
   return database().prepare("SELECT id, status, visitor_name, visitor_email FROM chat_threads WHERE token_hash = ?").bind(await hashToken(token)).first<Thread>();
 }
-function modelKey() {
-  return (env as unknown as { OPENAI_API_KEY?: string }).OPENAI_API_KEY?.trim() || "";
-}
-function guidedReply(body: string) {
-  const query = body.toLowerCase();
-  if (/e.?chat|chat assist|reply suggestion|conversation starter/.test(query)) return "eChat is an AI reply and chat assistant in development. Its page has a repeating seven day countdown, while a launch date has not been announced. What would you like to know?";
-  if (/easy.?link flex|travel|trip|holiday|flight|hotel|cruise|itinerary/.test(query)) return "EasyLink Flex is our travel booking experience in development for flights, cruises, holidays and AI itinerary planning. Tell the team what you have in mind.";
-  if (/e.?sim|easy.?link|mobile data|roaming|connectivity/.test(query)) return "For Easylink eSIM plans and activation, visit https://easylinksim.com/. Our team can help with other connectivity questions.";
-  if (/propert|house|home|real estate|listing/.test(query)) return "EasyProperties is our property discovery concept. Our team can follow up about your property enquiry.";
-  if (/brand|logo|graphic|identity/.test(query)) return "Our branding and design service covers visual identity and graphics. A project brief will help our team advise you.";
-  if (/social|content|marketing/.test(query)) return "Our social media and content service can help shape your message and creative assets. Share your goals with our team.";
-  if (/ai|automat|data|workflow/.test(query)) return "Our AI automation and data service focuses on useful workflows and insights. Tell our team what process you want to improve.";
-  if (/web|app|site|software|digital product/.test(query)) return "We build websites and apps around clear user journeys. Our team can discuss your idea, timeline and scope.";
-  return "Thanks for sharing your question. Our team can take a closer look and respond with the right details.";
-}
-async function aiReply(body: string, key: string) {
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "gpt-5-mini", store: false, max_output_tokens: 220,
-      instructions: "You are EasyDesignTech's clearly identified virtual customer care assistant. Reply to this one visitor message in at most 70 words, warmly and concretely. EasyDesignTech offers web and apps, branding and design, social media and content, and AI automation and data. Its businesses are Easylink eSIM at https://easylinksim.com/ (live), EasyLink Flex for flights, cruises, holidays and AI itinerary planning (in development), EasyProperties property discovery (in development), and eChat AI text reply and chat assistance (coming soon). Do not invent a launch date, prices, availability, customer results, commitments, or staff response times. If uncertain, say a person will follow up. Do not claim to be human. Do not ask for payment or sensitive data. Do not say you have already transferred the chat; the site does that after your reply.",
-      input: [{ role: "user", content: body }],
-    }), signal: AbortSignal.timeout(8500),
-  });
-  if (!response.ok) throw new Error(`Assistant request failed: ${response.status}`);
-  const result = await response.json() as { output?: { type?: string; content?: { type?: string; text?: string }[] }[] };
-  const answer = result.output?.filter(item => item.type === "message").flatMap(item => item.content || []).filter(item => item.type === "output_text").map(item => item.text || "").join("\n").trim();
-  if (!answer) throw new Error("Assistant returned no message");
-  return answer.slice(0, 1000);
+function geminiKey() {
+  return (env as unknown as { GEMINI_API_KEY?: string }).GEMINI_API_KEY?.trim() || "";
 }
 export async function GET(request: Request) {
   try {
@@ -64,7 +39,7 @@ export async function GET(request: Request) {
       headers.set("Set-Cookie", `${cookieName}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${new URL(request.url).protocol === "https:" ? "; Secure" : ""}`);
     }
     const messages = await db.prepare("SELECT id, sender, body, created_at FROM chat_messages WHERE thread_id = ? ORDER BY id DESC LIMIT 100").bind(thread.id).all<ChatMessage>();
-    return Response.json({ messages: (messages.results || []).reverse(), status: thread.status, visitorName: thread.visitor_name, visitorEmail: thread.visitor_email, aiEnabled: Boolean(modelKey()) }, { headers });
+    return Response.json({ messages: (messages.results || []).reverse(), status: thread.status, visitorName: thread.visitor_name, visitorEmail: thread.visitor_email, aiEnabled: Boolean(geminiKey()) }, { headers });
   } catch (error) {
     console.error("Chat read failed", error);
     return Response.json({ error: "Chat is temporarily unavailable" }, { status: 503 });
@@ -73,43 +48,35 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
   if (origin && origin !== new URL(request.url).origin) return Response.json({ error: "Invalid origin" }, { status: 403 });
-  if (Number(request.headers.get("content-length") || 0) > 4000) return Response.json({ error: "Message is too long" }, { status: 413 });
+  if (Number(request.headers.get("content-length") || 0) > 6000) return Response.json({ error: "Message is too long" }, { status: 413 });
   try {
     const thread = await existingThread(request);
     if (!thread) return Response.json({ error: "Open the chat and try again" }, { status: 403 });
-    const data = await request.json() as { action?: unknown; body?: unknown; name?: unknown; email?: unknown; website?: unknown };
+    const data = await request.json() as { action?: unknown; body?: unknown; name?: unknown; email?: unknown; message?: unknown; consent?: unknown; website?: unknown };
     if (data.website) return Response.json({ ok: true });
     const db = database();
     if (data.action === "contact") {
       const name = typeof data.name === "string" ? data.name.trim() : "";
       const email = typeof data.email === "string" ? data.email.trim().toLowerCase() : "";
-      if (thread.status !== "human" || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return Response.json({ error: "Enter a valid email address" }, { status: 400 });
-      await db.prepare("UPDATE chat_threads SET visitor_name = ?, visitor_email = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(name, email, thread.id).run();
-      if (name !== thread.visitor_name || email !== thread.visitor_email) {
-        const recent = await db.prepare("SELECT sender, body, created_at FROM chat_messages WHERE thread_id = ? ORDER BY id DESC LIMIT 12").bind(thread.id).all<ChatMessage>();
-        await Promise.all([sendOwnerNotification({
-          subject: `Chat contact details: conversation #${thread.id}`,
-          text: [
-            `A visitor left contact details for EasyDesignTech conversation #${thread.id}.`,
-            "",
-            `Name: ${name || "Not provided"}`,
-            `Email: ${email}`,
-            "",
-            "Recent conversation:",
-            ...(recent.results || []).reverse().map(item => `${item.sender.toUpperCase()} (${item.created_at}): ${item.body}`),
-            "",
-            `Open the private Studio to reply: ${new URL("/studio#chats", request.url)}`,
-            `Reply to this email to reach ${email}.`,
-          ].join("\n"),
+      const message = typeof data.message === "string" ? data.message.trim() : "";
+      if (name.length < 2 || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || message.length < 10 || message.length > 2000 || data.consent !== true) return Response.json({ error: "Please enter your name, email and a message of at least 10 characters" }, { status: 400 });
+      const recent = await db.prepare("SELECT id FROM enquiries WHERE email = ? AND interest = 'Website chat' AND created_at > datetime('now', '-2 minutes') LIMIT 1").bind(email).first();
+      if (recent) return Response.json({ error: "Please wait a moment before sending another message" }, { status: 429 });
+      const saved = await db.batch([
+        db.prepare("UPDATE chat_threads SET visitor_name = ?, visitor_email = ?, status = 'human', handoff_at = COALESCE(handoff_at, CURRENT_TIMESTAMP), updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(name, email, thread.id),
+        db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'visitor', ?)").bind(thread.id, message),
+        db.prepare("INSERT INTO enquiries (name, email, phone, interest, message) VALUES (?, ?, '', 'Website chat', ?)").bind(name, email, `Chat conversation #${thread.id}\n\n${message}`),
+      ]);
+      const enquiryId = Number(saved[2].meta.last_row_id);
+      await Promise.all([
+        sendOwnerNotification({
+          subject: `Website chat enquiry from ${name}`,
+          text: [`New website chat enquiry #${enquiryId}`, "", `Name: ${name}`, `Email: ${email}`, `Conversation: #${thread.id}`, "", "Message:", message, "", `Open the private Studio: ${new URL("/studio#chats", request.url)}`, `Reply to this email to contact ${email}.`].join("\n"),
           replyTo: email,
-          idempotencyKey: `chat-contact-${thread.id}-${await hashToken(`${name}\0${email}`)}`,
-        }), ...(email !== thread.visitor_email ? [sendCustomerAcknowledgement({
-          to: email,
-          name,
-          kind: "chat",
-          idempotencyKey: `chat-ack-${thread.id}-${await hashToken(email)}`,
-        })] : [])]);
-      }
+          idempotencyKey: `chat-enquiry-${enquiryId}`,
+        }),
+        sendCustomerAcknowledgement({ to: email, name, kind: "chat", idempotencyKey: `chat-enquiry-ack-${enquiryId}` }),
+      ]);
       return Response.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
     }
     const body = typeof data.body === "string" ? data.body.trim() : "";
@@ -122,23 +89,30 @@ export async function POST(request: Request) {
     ]);
     const messageId = Number(saved[0].meta.last_row_id);
     if (thread.status === "assistant") {
-      let reply = guidedReply(body);
-      const key = modelKey();
-      if (key) { try { reply = await aiReply(body, key); } catch (error) { console.error("Assistant unavailable, using guided response", error); } }
+      const [history, usage] = await Promise.all([
+        db.prepare("SELECT sender, body FROM chat_messages WHERE thread_id = ? AND id < ? AND sender IN ('visitor', 'assistant') ORDER BY id DESC LIMIT 8").bind(thread.id, messageId).all<{ sender: "visitor" | "assistant"; body: string }>(),
+        db.prepare("SELECT COUNT(*) AS total FROM chat_messages WHERE thread_id = ? AND sender = 'visitor' AND created_at >= datetime('now', '-1 day')").bind(thread.id).first<{ total: number }>(),
+      ]);
+      const publicHistory = (history.results || []).reverse().filter(item => item.body !== greeting && !containsContactDetails(item.body));
+      const result = (usage?.total || 0) > 20 ? { kind: "limit" as const } : containsContactDetails(body) ? { kind: "handoff" as const } : await askGemini(body, publicHistory, geminiKey());
+      if (result.kind === "answered") {
+        await db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'assistant', ?)").bind(thread.id, result.answer).run();
+        return Response.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
+      }
+      const reply = result.kind === "limit" ? limitHandoff : result.kind === "unavailable" ? unavailableHandoff : handoff;
       await db.batch([
         db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'assistant', ?)").bind(thread.id, reply),
-        db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'assistant', ?)").bind(thread.id, handoff),
         db.prepare("UPDATE chat_threads SET status = 'human', handoff_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(thread.id),
       ]);
       await sendOwnerNotification({
-        subject: `New chat for your team: conversation #${thread.id}`,
+        subject: `Chat needs a human reply: conversation #${thread.id}`,
         text: [
-          `A website visitor has been passed to the EasyDesignTech team in conversation #${thread.id}.`,
+          `A website visitor needs a human reply in conversation #${thread.id}.`,
           "",
           `Visitor: ${body}`,
-          `Assistant: ${reply}`,
+          `Reason: ${result.kind}`,
           "",
-          "The visitor can add their name and email in the chat after this handoff.",
+          "The visitor has been offered a contact form for their name, email and message.",
           `Open your private Studio to reply: ${new URL("/studio#chats", request.url)}`,
         ].join("\n"),
         idempotencyKey: `chat-handoff-${thread.id}`,

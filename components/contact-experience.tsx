@@ -77,6 +77,7 @@ export function ChatWidget() {
   const [draft, setDraft] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
   const [savedEmail, setSavedEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
@@ -123,26 +124,28 @@ export function ChatWidget() {
     if (savingContact) return;
     setSavingContact(true); setError("");
     try {
-      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "contact", name, email }) });
+      const values = new FormData(event.currentTarget);
+      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "contact", name, email, message: contactMessage, consent: values.get("consent") === "on", website: values.get("website") }) });
       const data = await response.json() as { error?: string };
-      if (!response.ok) throw new Error(data.error || "Could not save your email");
-      await load();
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not save your email"); }
+      if (!response.ok) throw new Error(data.error || "Could not send your message");
+      setContactMessage(""); await load();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not send your message"); }
     finally { setSavingContact(false); }
   }
-  const firstQuestion = stage === "assistant" && !messages.some(message => message.sender === "visitor");
+  const firstQuestion = stage === "assistant" && aiEnabled && !messages.some(message => message.sender === "visitor");
+  const needsContact = stage === "human" || (!loading && !aiEnabled);
   return <div className="chat-widget">
     {open && <section className="chat-panel" role="dialog" aria-modal="false" aria-label="Chat with EasyDesignTech support">
-      <div className="chat-head"><div className="chat-head-person"><Image src="/support-agent.webp" alt="" width={58} height={58} /><div><p>EASYDESIGNTECH CARE</p><h2>How can we help?</h2><span>{stage === "human" ? "Your message is with the team." : aiEnabled ? "AI assistant, then a human handoff" : "Guided assistant, then a human handoff"}</span></div></div><button type="button" onClick={() => setOpen(false)} aria-label="Close chat"><X size={20} /></button></div>
+      <div className="chat-head"><div className="chat-head-person"><Image src="/support-agent.webp" alt="" width={58} height={58} /><div><p>EASYDESIGNTECH CARE</p><h2>How can we help?</h2><span>{stage === "human" ? "Your message can reach our team." : aiEnabled ? "AI answers from our published information" : "Ask us or leave a message for the team"}</span></div></div><button type="button" onClick={() => setOpen(false)} aria-label="Close chat"><X size={20} /></button></div>
       <div className="chat-conversation" role="log" aria-label="Conversation" aria-live="polite">
         {loading && !messages.length ? <p className="chat-empty">Opening your conversation…</p> : messages.length ? messages.map(message => <div key={message.id} className={`chat-line ${message.sender === "visitor" ? "from-visitor" : "from-team"}`}>{message.sender === "assistant" && <Image className="chat-line-avatar" src="/support-agent.webp" alt="" width={28} height={28} />}<div className={`chat-bubble chat-bubble-${message.sender}`}><small>{message.sender === "assistant" ? "VIRTUAL ASSISTANT" : message.sender === "support" ? "HUMAN SUPPORT" : "YOU"}</small><p>{message.body}</p><time>{message.created_at}</time></div></div>) : <div className="chat-welcome"><MessageCircle size={26} /><strong>Your conversation starts here.</strong><p>Tell us what you need. The team can reply in this chat.</p></div>}
         {firstQuestion && !loading && <div className="chat-prompts" aria-label="Common topics"><span>WHAT CAN WE HELP WITH?</span>{["Easylink eSIM", "Websites and apps", "EasyLink Flex travel", "eChat coming soon"].map(topic => <button key={topic} type="button" disabled={sending} onClick={() => void sendMessage(`I’d like help with ${topic}.`)}>{topic} <ArrowUpRight size={13} /></button>)}</div>}
-        {stage === "human" && <div className="chat-handoff"><strong>Passed to a person</strong><p>The team can reply in this conversation when available. Keep this browser to return to it.</p></div>}
+        {needsContact && <div className="chat-handoff"><strong>Contact our team</strong><p>Use the form below for a personal reply. Your form details are handled separately from the AI chat.</p></div>}
         <div ref={endRef} />
       </div>
-      {stage === "human" && !savedEmail && <form className="chat-contact" onSubmit={saveContact}><label htmlFor="chat-email">Want a reply by email? We will send a confirmation and use your address to follow up.</label><div><input aria-label="Your name, optional" value={name} onChange={event => setName(event.target.value)} maxLength={100} placeholder="Name, optional" /><input id="chat-email" type="email" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} placeholder="Email address" /><button type="submit" disabled={savingContact}>{savingContact ? "Saving…" : "Save"}</button></div></form>}
-      {stage === "human" && savedEmail && <p className="chat-contact-saved">We can follow up at {savedEmail}.</p>}
-      <form className="chat-compose" onSubmit={event => { event.preventDefault(); void sendMessage(draft.trim()); }}><label htmlFor="chat-message">{stage === "human" ? "ADD TO YOUR MESSAGE" : "YOUR QUESTION"}</label><div><textarea id="chat-message" value={draft} onChange={event => setDraft(event.target.value)} rows={2} maxLength={1000} placeholder={stage === "human" ? "Add a detail for the team…" : "How can we help?"} required disabled={loading || sending} /><button type="submit" disabled={loading || sending || !draft.trim()} aria-label="Send chat message"><Send size={19} /></button></div><p className="chat-error" aria-live="polite">{error}</p></form>
+      {needsContact && !savedEmail && <form className="chat-contact" onSubmit={saveContact}><strong>Send your enquiry</strong><div className="chat-contact-fields"><label htmlFor="chat-name">Your name</label><input id="chat-name" name="name" autoComplete="name" value={name} onChange={event => setName(event.target.value)} minLength={2} maxLength={100} required placeholder="Your name" /><label htmlFor="chat-email">Email address</label><input id="chat-email" name="email" type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} placeholder="you@example.com" /><label htmlFor="chat-contact-message">Your message</label><textarea id="chat-contact-message" name="message" value={contactMessage} onChange={event => setContactMessage(event.target.value)} required minLength={10} maxLength={2000} rows={3} placeholder="Tell our team what you need" /></div><label className="chat-contact-consent"><input type="checkbox" name="consent" required /> Use my details to confirm and respond to this enquiry.</label><label className="honeypot" aria-hidden="true">Leave blank<input name="website" tabIndex={-1} autoComplete="off" /></label><button type="submit" disabled={savingContact}>{savingContact ? "Sending…" : "Send to the team"}</button><p className="chat-error" aria-live="polite">{error}</p></form>}
+      {needsContact && savedEmail && <p className="chat-contact-saved">Your details were received. We can follow up at {savedEmail}.</p>}
+      {((stage === "assistant" && aiEnabled) || (stage === "human" && savedEmail)) && <form className="chat-compose" onSubmit={event => { event.preventDefault(); void sendMessage(draft.trim()); }}><label htmlFor="chat-message">{stage === "human" ? "ADD TO YOUR MESSAGE" : "YOUR QUESTION"}</label><div><textarea id="chat-message" value={draft} onChange={event => setDraft(event.target.value)} rows={2} maxLength={1000} placeholder={stage === "human" ? "Add a detail for the team…" : "Ask about our services or FAQs. Do not include personal details."} required disabled={loading || sending} /><button type="submit" disabled={loading || sending || !draft.trim()} aria-label="Send chat message"><Send size={19} /></button></div><p className="chat-error" aria-live="polite">{error}</p></form>}
       <div className="chat-alternatives"><a href={contact.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle size={15} /> WhatsApp <ArrowUpRight size={13} /></a><a href={contact.emailHref}><Mail size={15} /> Email <ArrowUpRight size={13} /></a><a href="/contact" onClick={() => setOpen(false)}>Project enquiry <ArrowUpRight size={13} /></a></div>
     </section>}
     <button className="support-trigger" type="button" aria-label={open ? "Close customer care chat" : "Open customer care chat"} aria-expanded={open} onClick={() => { if (!open) setLoading(true); setOpen(value => !value); }}>{open ? <X size={21} aria-hidden="true" /> : <Image src="/support-agent.webp" alt="" width={44} height={44} />}<span>{open ? "Close chat" : "Ask us anything"}</span></button>
