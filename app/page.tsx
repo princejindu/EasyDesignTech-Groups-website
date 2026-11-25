@@ -51,33 +51,26 @@ export default function Home() {
     <div className="site-shell">
       <SiteHeader />
       <main>
-        <section className="hero home-hero" aria-labelledby="hero-title" onPointerMove={event => { if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--pointer-x", `${event.clientX - rect.left}px`); event.currentTarget.style.setProperty("--pointer-y", `${event.clientY - rect.top}px`); }}>
-          <div className="hero-motion" aria-hidden="true"><Image src="/business-globe.webp" alt="" fill priority sizes="100vw" /><span className="hero-motion-wash" /><span className="hero-motion-light hero-motion-light-one" /><span className="hero-motion-light hero-motion-light-two" /><span className="hero-motion-ring hero-motion-ring-one" /><span className="hero-motion-ring hero-motion-ring-two" /><span className="hero-motion-sweep" /></div>
-          <div className="hero-glow" aria-hidden="true" />
-          <div className="hero-pointer-glow" aria-hidden="true" />
-          <div className="container hero-stage">
-            <div className="hero-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><span>DESIGN · DEVELOPMENT · AI</span></div>
-            <div className="hero-copy">
-              <p className="eyebrow"><span className="eyebrow-line" /> FOR THE BUSINESS YOU ARE BUILDING</p>
-              <h1 id="hero-title"><span className="hero-title-line">Make your business</span><span className="hero-title-line">look <em>better.</em></span><span className="hero-title-line">Work <em>smarter.</em></span></h1>
-              <div className="hero-lead-row">
-                <p className="hero-intro">We design brands, build websites and apps, create content and connect AI tools. One studio to help your business make its next move.</p>
-                <div className="hero-actions">
-                  <Link className="button button-light" href="/contact">Start a project <ArrowUpRight size={18} aria-hidden="true" /></Link>
-                  <Link className="text-link text-link-light" href="/services">See what we do <ArrowDownRight size={18} aria-hidden="true" /></Link>
-                </div>
-              </div>
+        <section className="hero home-hero editorial-hero" aria-labelledby="hero-title">
+          <div className="editorial-atmosphere" aria-hidden="true" />
+          <div className="container editorial-stage">
+            <div className="editorial-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><span>BRAND · DIGITAL · CONTENT · AI</span></div>
+            <div className="editorial-copy">
+              <p className="editorial-kicker">A CREATIVE STUDIO FOR WHAT COMES NEXT</p>
+              <h1 id="hero-title"><span>YOUR NEXT</span><span>BIG IDEA.</span><span>MADE <strong>REAL.</strong></span></h1>
+              <p>We design brands, build websites and apps, create content and put AI to work. Tell us where you want to go. We will help you make it happen.</p>
+              <div className="editorial-actions"><Link className="editorial-primary" href="/contact">Start a project <ArrowUpRight size={18} aria-hidden="true" /></Link><Link className="editorial-secondary" href="/services">Explore our services <ArrowDownRight size={18} aria-hidden="true" /></Link></div>
             </div>
+            <div className="editorial-showcase" aria-label="Explore our creative and digital services">
+              {services.map(service => <Link className={`editorial-service-card editorial-service-${service.id}`} href={service.href} key={service.id}>
+                <Image src={service.image} alt="" fill sizes="(max-width: 600px) 75vw, (max-width: 850px) 42vw, 26vw" />
+                <span className="editorial-card-shade" aria-hidden="true" />
+                <span className="editorial-card-top"><span>EASYDESIGNTECH / SERVICES</span><ArrowUpRight size={20} aria-hidden="true" /></span>
+                <strong>{service.name}</strong>
+              </Link>)}
+            </div>
+            <div className="editorial-endline"><span>FROM FIRST SPARK TO THE FINISHED EXPERIENCE</span><Link href="/businesses">Explore our businesses <ArrowUpRight size={17} aria-hidden="true" /></Link></div>
           </div>
-          <div className="hero-business-band"><div className="container">
-            <div className="hero-business-heading"><span>01 / THE GROUP</span><p>Explore the businesses we are building</p><Link href="/businesses">View all businesses <ArrowUpRight size={15} aria-hidden="true" /></Link></div>
-            <nav className="hero-business-links" aria-label="EasyDesignTech businesses">
-              <a href="https://easylinksim.com/" target="_blank" rel="noopener noreferrer"><span>01 / CONNECTIVITY</span><strong>Easylink eSIM</strong><ArrowUpRight size={20} aria-hidden="true" /></a>
-              <Link href="/easylinkflex"><span>02 / TRAVEL</span><strong>EasyLink Flex</strong><ArrowUpRight size={20} aria-hidden="true" /></Link>
-              <Link href="/easyproperties"><span>03 / PROPERTY · COMING SOON</span><strong>EasyProperties</strong><ArrowUpRight size={20} aria-hidden="true" /></Link>
-              <Link href="/echat"><span>04 / AI · COMING SOON</span><strong>eChat</strong><ArrowUpRight size={20} aria-hidden="true" /></Link>
-            </nav>
-          </div></div>
         </section>
 
         <section className="services-section services-showcase" id="services" aria-labelledby="services-title">

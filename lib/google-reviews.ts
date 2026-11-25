@@ -6,7 +6,7 @@ export const googleReviewSnapshot = {
   business: "EasyDesignUK",
   rating: 5.0,
   total: 8,
-  capturedOn: "24 November 2026",
+  suppliedOn: "25 November 2026",
 } as const;
 
 export const googleReviews = [
