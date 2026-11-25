@@ -1,5 +1,6 @@
 import { database, type Review } from "@/db/site-data";
 import { googleReviews, googleReviewSnapshot } from "@/lib/google-reviews";
+import { clientTestimonials } from "@/lib/client-testimonials";
 
 export async function GET() {
   try {
@@ -9,9 +10,9 @@ export async function GET() {
       db.prepare("SELECT COUNT(*) AS total FROM reviews WHERE published = 1").first<{ total: number }>(),
       db.prepare("SELECT value FROM site_settings WHERE key = 'satisfied_clients'").first<{ value: string }>(),
     ]);
-    return Response.json({ reviews: [...googleReviews, ...(reviews.results || []).map(review => ({ ...review, source: "client" as const, excerpt: false }))], googleReviewSnapshot, approvedReviews: reviewTotal?.total || 0, satisfiedClients: count ? Number(count.value) : null }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ reviews: [...clientTestimonials, ...googleReviews, ...(reviews.results || []).map(review => ({ ...review, source: "client" as const, excerpt: false }))], googleReviewSnapshot, approvedReviews: reviewTotal?.total || 0, satisfiedClients: count ? Number(count.value) : null }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Social proof unavailable", error);
-    return Response.json({ reviews: googleReviews, googleReviewSnapshot, approvedReviews: null, satisfiedClients: null }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ reviews: [...clientTestimonials, ...googleReviews], googleReviewSnapshot, approvedReviews: null, satisfiedClients: null }, { headers: { "Cache-Control": "no-store" } });
   }
 }

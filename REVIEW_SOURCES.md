@@ -13,3 +13,13 @@ The owner supplied six screenshots of the EasyDesignUK Google reviews view. The 
 | ibekwe Collins | I can't say enough good things about EasyDesignUK! They've nailed every project we've worked on together |
 
 The screenshots include a Google notice stating “Reviews aren't verified.” The website labels the quotes as Google review excerpts and does not describe the listing or reviews as verified. It also labels the eight review total as a dated snapshot, not a live feed. The owner reply text is not counted or displayed as a client review.
+
+## Direct client testimonials
+
+The site owner supplied these three additional testimonials in text on 25 November 2026, attributed to the named businesses. Their wording is reproduced as supplied. They are displayed as client testimonials, separately from the Google snapshot, without an inferred star rating or verification badge.
+
+| Client | Text supplied |
+| --- | --- |
+| Helane-Mau Home Care Services | Easydesigntech built us a website that feels warm and professional, which matters when families are trusting us with someone they love. It's easy to navigate, works well on mobile, and we've seen more enquiries since launch. Prince was patient, responsive and really understood our sector. |
+| Renew Clean Group | We needed a site that looked sharp and made booking simple, and Easydesigntech delivered both. Clean design, fast loading, and customers say it's really easy to get a quote. Great communication from start to finish. |
+| A-Z Cybersecurity | Easydesigntech gave our brand a confident, modern identity that people trust instantly, and trust is everything in cybersecurity. The logo, colours and overall look made us stand out from competitors straight away. Amazing branding work. |

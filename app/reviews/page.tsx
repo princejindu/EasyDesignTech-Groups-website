@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-shell";
 import { SocialProof } from "@/components/social-proof";
 
-export const metadata: Metadata = { title: "Client voices | EasyDesignTech", description: "Read excerpts from EasyDesignUK Google reviews and share your experience with EasyDesignTech." };
+export const metadata: Metadata = { title: "Client voices | EasyDesignTech", description: "Read EasyDesignTech client testimonials and excerpts from EasyDesignUK Google reviews." };
 
 export default function ReviewsPage() {
   return <div className="site-shell"><SiteHeader /><main className="reviews-page"><SocialProof /><section className="reviews-next"><div className="container"><h2>Have something in mind?</h2><Link href="/contact" className="button button-light">Start a conversation <ArrowRight size={18} aria-hidden="true" /></Link></div></section></main><SiteFooter /></div>;
