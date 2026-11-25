@@ -19,3 +19,27 @@ Downloaded from Pexels on 13 November 2026. Pexels permits free commercial websi
 ## Illustrative design concepts
 
 The homepage idea room uses six original generated visual studies: `concept-identity.webp`, `concept-hospitality.webp`, `concept-care-web.webp`, `concept-social.webp`, `concept-travel.webp`, and `concept-ai.webp`. They demonstrate possible creative directions and are visibly labelled as illustrative concepts on the site. They are not completed client projects or endorsements.
+
+## Supplied visual references
+
+The homepage idea room also displays 17 images supplied in the conversation on 25 November 2026. They are optimized into `public/idea-reference-01.webp` through `public/idea-reference-17.webp` and labelled **supplied reference** in the gallery. Some contain names, logos, and work from other brands and designers. Their appearance is for visual inspiration and does not claim EasyDesignTech authorship, a client relationship, or endorsement. Usage rights beyond the user's instruction to include these uploads have not been independently verified.
+
+| Gallery asset | Supplied file |
+| --- | --- |
+| `idea-reference-01.webp` | `image(6).png` |
+| `idea-reference-02.webp` | `image(7).png` |
+| `idea-reference-03.webp` | `image(8).png` |
+| `idea-reference-04.webp` | `image(9).png` |
+| `idea-reference-05.webp` | `image(10).png` |
+| `idea-reference-06.webp` | `image(20261125-142113).png` |
+| `idea-reference-07.webp` | `image(20261125-142207).png` |
+| `idea-reference-08.webp` | `image(20261125-142229).png` |
+| `idea-reference-09.webp` | `image(20261125-142311).png` |
+| `idea-reference-10.webp` | `image(20261125-142433).png` |
+| `idea-reference-11.webp` | `image(20261125-142449).png` |
+| `idea-reference-12.webp` | `image(20261125-142614).png` |
+| `idea-reference-13.webp` | `image(20261125-142826).png` |
+| `idea-reference-14.webp` | `image(20261125-142842).png` |
+| `idea-reference-15.webp` | `image(20261125-142959).png` |
+| `idea-reference-16.webp` | `image(20261125-143035).png` |
+| `idea-reference-17.webp` | `image(20261125-143106).png` |

@@ -18,19 +18,37 @@ const services = [
 ];
 
 const heroScenes = [
-  { id: "move", label: "Make the move", title: "Make the next move.", lines: [{ before: "MAKE THE" }, { accent: "NEXT", after: " MOVE." }], image: "/stock-video.jpg" },
-  { id: "create", label: "Think it", title: "Think it. We bring it to life.", lines: [{ before: "THINK IT." }, { before: "WE BRING IT" }, { accent: "TO LIFE." }], image: "/stock-branding.jpg" },
-  { id: "imagine", label: "Imagine it", title: "Your imagination. Made real.", lines: [{ before: "YOUR" }, { accent: "IMAGINATION." }, { before: "MADE REAL." }], image: "/stock-web.jpg" },
-  { id: "visible", label: "Be seen", title: "Your business needs to be seen.", lines: [{ before: "YOUR BUSINESS" }, { accent: "NEEDS TO BE" }, { before: "SEEN." }], image: "/stock-automation.jpg" },
+  { id: "visibility", word: "Visibility.", image: "/stock-content.jpg" },
+  { id: "innovation", word: "Innovation.", image: "/stock-automation.jpg" },
+  { id: "growth", word: "Growth.", image: "/stock-video.jpg" },
+  { id: "recognition", word: "Recognition.", image: "/stock-branding.jpg" },
+  { id: "excellence", word: "Excellence.", image: "/stock-web.jpg" },
 ];
 
 const designConcepts = [
-  { image: "/concept-identity.webp", title: "Identity with presence", category: "BRAND IDENTITY", description: "A bold visual system carried across tactile print." },
-  { image: "/concept-hospitality.webp", title: "Made to be remembered", category: "HOSPITALITY", description: "Colour, packaging and experience in one direction." },
-  { image: "/concept-care-web.webp", title: "Care, clearly expressed", category: "WEB EXPERIENCE", description: "A warmer digital experience across every screen." },
-  { image: "/concept-social.webp", title: "Stop the scroll", category: "SOCIAL CREATIVE", description: "An energetic campaign with a consistent point of view." },
-  { image: "/concept-travel.webp", title: "A journey in your hand", category: "PRODUCT DESIGN", description: "A travel app concept that makes exploration feel effortless." },
-  { image: "/concept-ai.webp", title: "Clarity from complexity", category: "AI EXPERIENCE", description: "A smarter workspace with a clear visual rhythm." },
+  { image: "/concept-identity.webp", title: "Identity with presence", category: "BRAND IDENTITY", description: "A bold visual system carried across tactile print.", source: "concept" },
+  { image: "/concept-hospitality.webp", title: "Made to be remembered", category: "HOSPITALITY", description: "Colour, packaging and experience in one direction.", source: "concept" },
+  { image: "/concept-care-web.webp", title: "Care, clearly expressed", category: "WEB EXPERIENCE", description: "A warmer digital experience across every screen.", source: "concept" },
+  { image: "/concept-social.webp", title: "Stop the scroll", category: "SOCIAL CREATIVE", description: "An energetic campaign with a consistent point of view.", source: "concept" },
+  { image: "/concept-travel.webp", title: "A journey in your hand", category: "PRODUCT DESIGN", description: "A travel app concept that makes exploration feel effortless.", source: "concept" },
+  { image: "/concept-ai.webp", title: "Clarity from complexity", category: "AI EXPERIENCE", description: "A smarter workspace with a clear visual rhythm.", source: "concept" },
+  { image: "/idea-reference-01.webp", title: "Social design in layers", category: "SOCIAL MEDIA", description: "Campaign panels and a clear focal point.", source: "reference" },
+  { image: "/idea-reference-02.webp", title: "Colour in motion", category: "PRODUCT CAMPAIGN", description: "Bold diagonal colour and product storytelling.", source: "reference" },
+  { image: "/idea-reference-03.webp", title: "A property story", category: "PROPERTY CREATIVE", description: "A coordinated series of property visuals.", source: "reference" },
+  { image: "/idea-reference-04.webp", title: "Campaign collection", category: "SOCIAL CAMPAIGN", description: "A connected set of promotional posts.", source: "reference" },
+  { image: "/idea-reference-05.webp", title: "A striking point of view", category: "DESIGN CAMPAIGN", description: "An expressive layout built around one idea.", source: "reference" },
+  { image: "/idea-reference-06.webp", title: "A playful digital world", category: "WEB CREATIVE", description: "Character led web and brand composition.", source: "reference" },
+  { image: "/idea-reference-07.webp", title: "Personality in every detail", category: "BRAND CHARACTER", description: "A memorable mascot and graphic language.", source: "reference" },
+  { image: "/idea-reference-08.webp", title: "Ideas worth making", category: "EDITORIAL CREATIVE", description: "A visual story about turning ideas into work.", source: "reference" },
+  { image: "/idea-reference-09.webp", title: "A direct invitation", category: "BRAND CAMPAIGN", description: "Personality and type working together.", source: "reference" },
+  { image: "/idea-reference-10.webp", title: "Imagination at work", category: "CREATIVE DIRECTION", description: "Colour and character with a playful spirit.", source: "reference" },
+  { image: "/idea-reference-11.webp", title: "The right move", category: "BRAND STRATEGY", description: "A high contrast visual metaphor for impact.", source: "reference" },
+  { image: "/idea-reference-12.webp", title: "Digital goals, made clear", category: "TECH CAMPAIGN", description: "A bold composition for connected services.", source: "reference" },
+  { image: "/idea-reference-13.webp", title: "From canvas to campaign", category: "FOOD CREATIVE", description: "A promotional layout in the making.", source: "reference" },
+  { image: "/idea-reference-14.webp", title: "Event energy", category: "EVENT DESIGN", description: "Bright visual directions for an event series.", source: "reference" },
+  { image: "/idea-reference-15.webp", title: "Live and in colour", category: "EVENT CAMPAIGN", description: "Strong display type and dynamic imagery.", source: "reference" },
+  { image: "/idea-reference-16.webp", title: "Culture and expression", category: "POSTER DESIGN", description: "An expressive composition for a live gathering.", source: "reference" },
+  { image: "/idea-reference-17.webp", title: "A growth story", category: "EVENT PROMOTION", description: "Clear hierarchy and a confident portrait.", source: "reference" },
 ];
 
 const ventures = [
@@ -42,6 +60,7 @@ const ventures = [
 
 export default function Home() {
   const track = useRef<HTMLDivElement>(null);
+  const conceptThumbnails = useRef<HTMLDivElement>(null);
   const [activeHero, setActiveHero] = useState(0);
   const [activeConcept, setActiveConcept] = useState(0);
   const [motionPaused, setMotionPaused] = useState(false);
@@ -61,7 +80,7 @@ export default function Home() {
   }, []);
   useEffect(() => {
     if (motionPaused || reducedMotion || heroInteracting) return;
-    const timer = window.setInterval(() => setActiveHero(index => (index + 1) % heroScenes.length), 6400);
+    const timer = window.setInterval(() => setActiveHero(index => (index + 1) % heroScenes.length), 3000);
     return () => window.clearInterval(timer);
   }, [motionPaused, reducedMotion, heroInteracting, heroCycle]);
   useEffect(() => {
@@ -71,6 +90,12 @@ export default function Home() {
   }, [motionPaused, reducedMotion, galleryInteracting, galleryCycle]);
   const selectHero = (index: number) => { setActiveHero(index); setHeroCycle(value => value + 1); };
   const selectConcept = (index: number) => { setActiveConcept((index + designConcepts.length) % designConcepts.length); setGalleryCycle(value => value + 1); };
+  useEffect(() => {
+    const node = conceptThumbnails.current;
+    const selected = node?.children[activeConcept] as HTMLElement | undefined;
+    if (!node || !selected) return;
+    node.scrollTo({ left: selected.offsetLeft - node.offsetLeft - (node.clientWidth - selected.clientWidth) / 2, behavior: reducedMotion ? "instant" : "smooth" });
+  }, [activeConcept, reducedMotion]);
   useEffect(() => {
     const node = track.current;
     if (!node) return;
@@ -106,22 +131,22 @@ export default function Home() {
             <div className="immersive-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><div><span>DESIGN · DEVELOPMENT · AI</span><button type="button" className="immersive-motion-toggle" onClick={() => setMotionPaused(value => !value)} disabled={reducedMotion} aria-label={reducedMotion ? "Motion is off in your device settings" : motionPaused ? "Play hero and showcase motion" : "Pause hero and showcase motion"}>{motionPaused || reducedMotion ? <Play size={14} aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}<span>{reducedMotion ? "MOTION OFF" : motionPaused ? "PLAY MOTION" : "PAUSE MOTION"}</span></button></div></div>
             <div className="immersive-main">
               <div className="immersive-copy">
-                <p className="immersive-kicker"><span /> A STUDIO FOR WHAT COMES NEXT</p>
-                <h1 id="hero-title" key={heroScenes[activeHero].id} aria-label={heroScenes[activeHero].title}>{heroScenes[activeHero].lines.map((line, index) => <span key={index}>{line.before}{line.accent && <em>{line.accent}</em>}{"after" in line && line.after}</span>)}</h1>
-                <p className="immersive-intro">We build brands, websites, apps, content and smart systems that help your business stand out and move forward.</p>
+                <p className="immersive-kicker"><span /> CREATIVITY WITHOUT LIMITS</p>
+                <h1 id="hero-title" aria-label={`Your Business Deserves ${heroScenes[activeHero].word}`}><span>YOUR BUSINESS</span><span>DESERVES</span><span className="hero-word-viewport"><em className="hero-changing-word" key={heroScenes[activeHero].id}>{heroScenes[activeHero].word}</em></span></h1>
+                <p className="immersive-intro"><strong>Your vision. Our innovation.</strong> Empowering businesses through creativity, technology and extraordinary digital experiences.</p>
                 <div className="immersive-actions"><Link className="immersive-primary" href="/contact">Start a project <ArrowUpRight size={19} aria-hidden="true" /></Link><Link className="immersive-secondary" href="/services">Explore services <ArrowDownRight size={19} aria-hidden="true" /></Link></div>
               </div>
               <div className="immersive-feature" onPointerEnter={() => setGalleryInteracting(true)} onPointerLeave={() => setGalleryInteracting(false)} onFocusCapture={() => setGalleryInteracting(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setGalleryInteracting(false); }}>
-                <div className="showcase-panel" role="region" aria-roledescription="carousel" aria-label="Illustrative design concepts">
+                <div className="showcase-panel" role="region" aria-roledescription="carousel" aria-label="Design concepts and supplied visual references">
                   <div className="showcase-top"><span>THE IDEA ROOM</span><span>{String(activeConcept + 1).padStart(2, "0")} / {String(designConcepts.length).padStart(2, "0")}</span></div>
-                  <div className="showcase-image" key={designConcepts[activeConcept].image}><Image src={designConcepts[activeConcept].image} alt={`${designConcepts[activeConcept].category.toLowerCase()} visual concept`} fill sizes="(max-width: 850px) 100vw, 420px" /></div>
-                  <div className="showcase-caption"><div><span>{designConcepts[activeConcept].category} / CONCEPT STUDY</span><strong>{designConcepts[activeConcept].title}</strong><p>{designConcepts[activeConcept].description}</p></div><div className="showcase-arrows"><button type="button" aria-label="Previous concept" onClick={() => selectConcept(activeConcept - 1)}><ArrowLeft size={17} aria-hidden="true" /></button><button type="button" aria-label="Next concept" onClick={() => selectConcept(activeConcept + 1)}><ArrowRight size={17} aria-hidden="true" /></button></div></div>
-                  <div className="showcase-thumbnails" role="group" aria-label="Choose a design concept">{designConcepts.map((concept, index) => <button type="button" key={concept.image} className={activeConcept === index ? "is-active" : ""} aria-label={`Show concept ${index + 1}: ${concept.title}`} aria-pressed={activeConcept === index} onClick={() => selectConcept(index)}><Image src={concept.image} alt="" fill sizes="64px" /></button>)}</div>
-                  <span className="showcase-disclaimer">Illustrative concepts created for this site</span>
+                  <div className={`showcase-image${designConcepts[activeConcept].source === "reference" ? " is-reference" : ""}`} key={designConcepts[activeConcept].image}>{designConcepts[activeConcept].source === "reference" && <Image className="showcase-image-backdrop" src={designConcepts[activeConcept].image} alt="" aria-hidden="true" fill sizes="(max-width: 850px) 100vw, 420px" />}<Image className="showcase-image-main" src={designConcepts[activeConcept].image} alt={`${designConcepts[activeConcept].category.toLowerCase()} ${designConcepts[activeConcept].source === "reference" ? "reference artwork" : "illustrative concept"}`} fill sizes="(max-width: 850px) 100vw, 420px" /></div>
+                  <div className="showcase-caption"><div><span>{designConcepts[activeConcept].category} / {designConcepts[activeConcept].source === "reference" ? "SUPPLIED REFERENCE" : "CONCEPT STUDY"}</span><strong>{designConcepts[activeConcept].title}</strong><p>{designConcepts[activeConcept].description}</p></div><div className="showcase-arrows"><button type="button" aria-label="Previous idea" onClick={() => selectConcept(activeConcept - 1)}><ArrowLeft size={17} aria-hidden="true" /></button><button type="button" aria-label="Next idea" onClick={() => selectConcept(activeConcept + 1)}><ArrowRight size={17} aria-hidden="true" /></button></div></div>
+                  <div className="showcase-thumbnails" ref={conceptThumbnails} role="group" aria-label="Choose an idea">{designConcepts.map((concept, index) => <button type="button" key={concept.image} className={activeConcept === index ? "is-active" : ""} aria-label={`Show idea ${index + 1}: ${concept.title}`} aria-pressed={activeConcept === index} onClick={() => selectConcept(index)}><Image src={concept.image} alt="" fill sizes="64px" /></button>)}</div>
+                  <span className="showcase-disclaimer">{designConcepts[activeConcept].source === "reference" ? "Visual reference supplied by you. Third party brands shown for inspiration." : "Illustrative concept created for this site."}</span>
                 </div>
               </div>
             </div>
-            <div className="immersive-switcher" onPointerEnter={() => setHeroInteracting(true)} onPointerLeave={() => setHeroInteracting(false)} onFocusCapture={() => setHeroInteracting(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeroInteracting(false); }}><div className="immersive-switcher-label"><span>THE STORY IN MOTION</span><small>CHOOSE A CHAPTER</small></div><div className="immersive-options" role="group" aria-label="Choose a hero message">{heroScenes.map((scene, index) => <button type="button" key={scene.id} className={activeHero === index ? "is-active" : ""} aria-pressed={activeHero === index} onClick={() => selectHero(index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{scene.label}</strong><ArrowUpRight size={16} aria-hidden="true" /></button>)}</div></div>
+            <div className="immersive-switcher" onPointerEnter={() => setHeroInteracting(true)} onPointerLeave={() => setHeroInteracting(false)} onFocusCapture={() => setHeroInteracting(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeroInteracting(false); }}><div className="immersive-switcher-label"><span>TURN IDEAS INTO REALITY</span><small>EXPLORE WHAT IS POSSIBLE</small></div><div className="immersive-options" role="group" aria-label="Choose a business outcome">{heroScenes.map((scene, index) => <button type="button" key={scene.id} className={activeHero === index ? "is-active" : ""} aria-pressed={activeHero === index} onClick={() => selectHero(index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{scene.word}</strong><ArrowUpRight size={16} aria-hidden="true" /></button>)}</div></div>
           </div>
         </section>
 
