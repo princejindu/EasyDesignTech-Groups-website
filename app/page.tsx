@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Braces, Compass, Layers3, Sparkles } from "lucide-react";
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Braces, Compass, Layers3, Pause, Play, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-shell";
 import { EnquiryForm, FacebookContactLink } from "@/components/contact-experience";
 import { contact } from "@/lib/contact";
@@ -18,10 +18,19 @@ const services = [
 ];
 
 const heroScenes = [
-  { id: "web", label: "Web & apps", title: "Digital experiences", description: "Websites and apps built to look sharp, feel simple and work hard.", image: "/stock-web.jpg", href: "/services/web-apps", icon: Braces },
-  { id: "brand", label: "Brand & design", title: "Distinctive brands", description: "Identity and design that make your business recognisable.", image: "/stock-branding.jpg", href: "/services/branding", icon: Layers3 },
-  { id: "content", label: "Content & motion", title: "Stories that move", description: "Social content, campaigns and motion made with purpose.", image: "/stock-video.jpg", href: "/services/social-content", icon: Sparkles },
-  { id: "ai", label: "AI & automation", title: "Smarter systems", description: "Useful AI workflows and data tools for the way you work.", image: "/stock-automation.jpg", href: "/services/automation", icon: Compass },
+  { id: "move", label: "Make the move", title: "Make the next move.", lines: [{ before: "MAKE THE" }, { accent: "NEXT", after: " MOVE." }], image: "/stock-video.jpg" },
+  { id: "create", label: "Think it", title: "Think it. We bring it to life.", lines: [{ before: "THINK IT." }, { before: "WE BRING IT" }, { accent: "TO LIFE." }], image: "/stock-branding.jpg" },
+  { id: "imagine", label: "Imagine it", title: "Your imagination. Made real.", lines: [{ before: "YOUR" }, { accent: "IMAGINATION." }, { before: "MADE REAL." }], image: "/stock-web.jpg" },
+  { id: "visible", label: "Be seen", title: "Your business needs to be seen.", lines: [{ before: "YOUR BUSINESS" }, { accent: "NEEDS TO BE" }, { before: "SEEN." }], image: "/stock-automation.jpg" },
+];
+
+const designConcepts = [
+  { image: "/concept-identity.webp", title: "Identity with presence", category: "BRAND IDENTITY", description: "A bold visual system carried across tactile print." },
+  { image: "/concept-hospitality.webp", title: "Made to be remembered", category: "HOSPITALITY", description: "Colour, packaging and experience in one direction." },
+  { image: "/concept-care-web.webp", title: "Care, clearly expressed", category: "WEB EXPERIENCE", description: "A warmer digital experience across every screen." },
+  { image: "/concept-social.webp", title: "Stop the scroll", category: "SOCIAL CREATIVE", description: "An energetic campaign with a consistent point of view." },
+  { image: "/concept-travel.webp", title: "A journey in your hand", category: "PRODUCT DESIGN", description: "A travel app concept that makes exploration feel effortless." },
+  { image: "/concept-ai.webp", title: "Clarity from complexity", category: "AI EXPERIENCE", description: "A smarter workspace with a clear visual rhythm." },
 ];
 
 const ventures = [
@@ -33,10 +42,35 @@ const ventures = [
 
 export default function Home() {
   const track = useRef<HTMLDivElement>(null);
-  const [activeHero, setActiveHero] = useState(2);
-  const ActiveHeroIcon = heroScenes[activeHero].icon;
+  const [activeHero, setActiveHero] = useState(0);
+  const [activeConcept, setActiveConcept] = useState(0);
+  const [motionPaused, setMotionPaused] = useState(false);
+  const [heroInteracting, setHeroInteracting] = useState(false);
+  const [galleryInteracting, setGalleryInteracting] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [heroCycle, setHeroCycle] = useState(0);
+  const [galleryCycle, setGalleryCycle] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  useEffect(() => {
+    if (motionPaused || reducedMotion || heroInteracting) return;
+    const timer = window.setInterval(() => setActiveHero(index => (index + 1) % heroScenes.length), 6400);
+    return () => window.clearInterval(timer);
+  }, [motionPaused, reducedMotion, heroInteracting, heroCycle]);
+  useEffect(() => {
+    if (motionPaused || reducedMotion || galleryInteracting) return;
+    const timer = window.setInterval(() => setActiveConcept(index => (index + 1) % designConcepts.length), 3200);
+    return () => window.clearInterval(timer);
+  }, [motionPaused, reducedMotion, galleryInteracting, galleryCycle]);
+  const selectHero = (index: number) => { setActiveHero(index); setHeroCycle(value => value + 1); };
+  const selectConcept = (index: number) => { setActiveConcept((index + designConcepts.length) % designConcepts.length); setGalleryCycle(value => value + 1); };
   useEffect(() => {
     const node = track.current;
     if (!node) return;
@@ -60,35 +94,38 @@ export default function Home() {
     <div className="site-shell">
       <SiteHeader />
       <main>
-        <section className={`hero home-hero immersive-hero immersive-hero-${heroScenes[activeHero].id}`} aria-labelledby="hero-title" onPointerMove={event => {
+        <section className={`hero home-hero immersive-hero immersive-hero-${heroScenes[activeHero].id}${motionPaused ? " is-paused" : ""}${heroInteracting ? " is-interacting" : ""}`} aria-labelledby="hero-title" onPointerMove={event => {
           if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
           const rect = event.currentTarget.getBoundingClientRect();
           event.currentTarget.style.setProperty("--hero-pointer-x", `${event.clientX - rect.left}px`);
           event.currentTarget.style.setProperty("--hero-pointer-y", `${event.clientY - rect.top}px`);
         }}>
-          <div className="immersive-scene" key={heroScenes[activeHero].id} aria-hidden="true"><Image src={heroScenes[activeHero].image} alt="" fill priority={activeHero === 2} sizes="100vw" /></div>
+          {heroScenes.map((scene, index) => <div className={`immersive-scene immersive-scene-${scene.id}${activeHero === index ? " is-active" : ""}`} key={scene.id} aria-hidden="true"><Image src={scene.image} alt="" fill priority={index === 0} sizes="100vw" /></div>)}
           <div className="immersive-atmosphere" aria-hidden="true"><span className="immersive-orbit" /><span className="immersive-pointer" /></div>
           <div className="container immersive-stage">
-            <div className="immersive-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><span>DESIGN · DEVELOPMENT · AI</span></div>
+            <div className="immersive-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><div><span>DESIGN · DEVELOPMENT · AI</span><button type="button" className="immersive-motion-toggle" onClick={() => setMotionPaused(value => !value)} disabled={reducedMotion} aria-label={reducedMotion ? "Motion is off in your device settings" : motionPaused ? "Play hero and showcase motion" : "Pause hero and showcase motion"}>{motionPaused || reducedMotion ? <Play size={14} aria-hidden="true" /> : <Pause size={14} aria-hidden="true" />}<span>{reducedMotion ? "MOTION OFF" : motionPaused ? "PLAY MOTION" : "PAUSE MOTION"}</span></button></div></div>
             <div className="immersive-main">
               <div className="immersive-copy">
                 <p className="immersive-kicker"><span /> A STUDIO FOR WHAT COMES NEXT</p>
-                <h1 id="hero-title"><span>MAKE THE</span><span><em>NEXT</em> MOVE.</span></h1>
+                <h1 id="hero-title" key={heroScenes[activeHero].id} aria-label={heroScenes[activeHero].title}>{heroScenes[activeHero].lines.map((line, index) => <span key={index}>{line.before}{line.accent && <em>{line.accent}</em>}{"after" in line && line.after}</span>)}</h1>
                 <p className="immersive-intro">We build brands, websites, apps, content and smart systems that help your business stand out and move forward.</p>
                 <div className="immersive-actions"><Link className="immersive-primary" href="/contact">Start a project <ArrowUpRight size={19} aria-hidden="true" /></Link><Link className="immersive-secondary" href="/services">Explore services <ArrowDownRight size={19} aria-hidden="true" /></Link></div>
               </div>
-              <div className="immersive-feature" aria-live="polite">
-                <Link key={heroScenes[activeHero].id} href={heroScenes[activeHero].href} className="immersive-feature-panel">
-                  <span className="immersive-feature-top"><span>IN FOCUS / {String(activeHero + 1).padStart(2, "0")}</span><ActiveHeroIcon size={23} strokeWidth={1.4} aria-hidden="true" /></span>
-                  <strong>{heroScenes[activeHero].title}</strong>
-                  <p>{heroScenes[activeHero].description}</p>
-                  <span className="immersive-feature-link">Explore this service <ArrowUpRight size={17} aria-hidden="true" /></span>
-                </Link>
+              <div className="immersive-feature" onPointerEnter={() => setGalleryInteracting(true)} onPointerLeave={() => setGalleryInteracting(false)} onFocusCapture={() => setGalleryInteracting(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setGalleryInteracting(false); }}>
+                <div className="showcase-panel" role="region" aria-roledescription="carousel" aria-label="Illustrative design concepts">
+                  <div className="showcase-top"><span>THE IDEA ROOM</span><span>{String(activeConcept + 1).padStart(2, "0")} / {String(designConcepts.length).padStart(2, "0")}</span></div>
+                  <div className="showcase-image" key={designConcepts[activeConcept].image}><Image src={designConcepts[activeConcept].image} alt={`${designConcepts[activeConcept].category.toLowerCase()} visual concept`} fill sizes="(max-width: 850px) 100vw, 420px" /></div>
+                  <div className="showcase-caption"><div><span>{designConcepts[activeConcept].category} / CONCEPT STUDY</span><strong>{designConcepts[activeConcept].title}</strong><p>{designConcepts[activeConcept].description}</p></div><div className="showcase-arrows"><button type="button" aria-label="Previous concept" onClick={() => selectConcept(activeConcept - 1)}><ArrowLeft size={17} aria-hidden="true" /></button><button type="button" aria-label="Next concept" onClick={() => selectConcept(activeConcept + 1)}><ArrowRight size={17} aria-hidden="true" /></button></div></div>
+                  <div className="showcase-thumbnails" role="group" aria-label="Choose a design concept">{designConcepts.map((concept, index) => <button type="button" key={concept.image} className={activeConcept === index ? "is-active" : ""} aria-label={`Show concept ${index + 1}: ${concept.title}`} aria-pressed={activeConcept === index} onClick={() => selectConcept(index)}><Image src={concept.image} alt="" fill sizes="64px" /></button>)}</div>
+                  <span className="showcase-disclaimer">Illustrative concepts created for this site</span>
+                </div>
               </div>
             </div>
-            <div className="immersive-switcher"><div className="immersive-switcher-label"><span>EXPLORE OUR SERVICES</span><small>SELECT A FOCUS</small></div><div className="immersive-options" role="group" aria-label="Change the featured service">{heroScenes.map((scene, index) => <button type="button" key={scene.id} className={activeHero === index ? "is-active" : ""} aria-pressed={activeHero === index} onClick={() => setActiveHero(index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{scene.label}</strong><ArrowUpRight size={16} aria-hidden="true" /></button>)}</div></div>
+            <div className="immersive-switcher" onPointerEnter={() => setHeroInteracting(true)} onPointerLeave={() => setHeroInteracting(false)} onFocusCapture={() => setHeroInteracting(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setHeroInteracting(false); }}><div className="immersive-switcher-label"><span>THE STORY IN MOTION</span><small>CHOOSE A CHAPTER</small></div><div className="immersive-options" role="group" aria-label="Choose a hero message">{heroScenes.map((scene, index) => <button type="button" key={scene.id} className={activeHero === index ? "is-active" : ""} aria-pressed={activeHero === index} onClick={() => selectHero(index)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{scene.label}</strong><ArrowUpRight size={16} aria-hidden="true" /></button>)}</div></div>
           </div>
         </section>
+
+        <div className={`idea-marquee${motionPaused ? " is-paused" : ""}`} role="note" aria-label="Think it. We create it."><div className="idea-marquee-track" aria-hidden="true">{[0, 1].map(group => <div className="idea-marquee-group" key={group}>{Array.from({ length: 5 }, (_, index) => <span key={index}>THINK IT. <strong>WE CREATE IT.</strong><i /></span>)}</div>)}</div></div>
 
         <section className="services-section services-showcase" id="services" aria-labelledby="services-title">
           <div className="container">

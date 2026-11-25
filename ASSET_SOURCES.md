@@ -15,3 +15,7 @@ The website uses these photographs as illustrative stock imagery. They are not e
 | `public/stock-property.jpg` | [Modern apartment interior](https://www.pexels.com/photo/modern-living-room-in-an-apartment-18907003/) |
 
 Downloaded from Pexels on 13 November 2026. Pexels permits free commercial website use and modification under its [photo and video license](https://www.pexels.com/license/). Attribution is not required, but source links are retained here for provenance. The site keeps its original brand mark, customer care illustration and abstract globe as distinct design elements.
+
+## Illustrative design concepts
+
+The homepage idea room uses six original generated visual studies: `concept-identity.webp`, `concept-hospitality.webp`, `concept-care-web.webp`, `concept-social.webp`, `concept-travel.webp`, and `concept-ai.webp`. They demonstrate possible creative directions and are visibly labelled as illustrative concepts on the site. They are not completed client projects or endorsements.
