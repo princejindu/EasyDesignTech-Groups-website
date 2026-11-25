@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Braces, Compass, Layers3, MoveUpRight, Sparkles } from "lucide-react";
+import { ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Braces, Compass, Layers3, Sparkles } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-shell";
 import { EnquiryForm, FacebookContactLink } from "@/components/contact-experience";
 import { contact } from "@/lib/contact";
@@ -51,30 +51,33 @@ export default function Home() {
     <div className="site-shell">
       <SiteHeader />
       <main>
-        <section className="hero" aria-labelledby="hero-title">
+        <section className="hero home-hero" aria-labelledby="hero-title" onPointerMove={event => { if (event.pointerType !== "mouse" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.setProperty("--pointer-x", `${event.clientX - rect.left}px`); event.currentTarget.style.setProperty("--pointer-y", `${event.clientY - rect.top}px`); }}>
           <div className="hero-motion" aria-hidden="true"><Image src="/business-globe.webp" alt="" fill priority sizes="100vw" /><span className="hero-motion-wash" /><span className="hero-motion-light hero-motion-light-one" /><span className="hero-motion-light hero-motion-light-two" /><span className="hero-motion-ring hero-motion-ring-one" /><span className="hero-motion-ring hero-motion-ring-two" /><span className="hero-motion-sweep" /></div>
           <div className="hero-glow" aria-hidden="true" />
-          <div className="container hero-layout">
+          <div className="hero-pointer-glow" aria-hidden="true" />
+          <div className="container hero-stage">
+            <div className="hero-topline"><span>EASYDESIGNTECH / CREATIVE TECHNOLOGY</span><span>DESIGN · DEVELOPMENT · AI</span></div>
             <div className="hero-copy">
-              <p className="eyebrow"><span className="eyebrow-line" /> CREATIVE STUDIO / DIGITAL PRODUCTS</p>
-              <h1 id="hero-title">Ideas that<br /><em>work better.</em></h1>
-              <p className="hero-intro">EasyDesignTech designs brands, builds websites and apps, creates content and connects AI workflows. One studio for the work that moves your business forward.</p>
-              <div className="hero-actions">
-                <Link className="button button-light" href="/contact">Start your project <ArrowUpRight size={18} aria-hidden="true" /></Link>
-                <Link className="text-link text-link-light" href="/services">Explore services <ArrowDownRight size={18} aria-hidden="true" /></Link>
+              <p className="eyebrow"><span className="eyebrow-line" /> FOR THE BUSINESS YOU ARE BUILDING</p>
+              <h1 id="hero-title"><span className="hero-title-line">Make your business</span><span className="hero-title-line">look <em>better.</em></span><span className="hero-title-line">Work <em>smarter.</em></span></h1>
+              <div className="hero-lead-row">
+                <p className="hero-intro">We design brands, build websites and apps, create content and connect AI tools. One studio to help your business make its next move.</p>
+                <div className="hero-actions">
+                  <Link className="button button-light" href="/contact">Start a project <ArrowUpRight size={18} aria-hidden="true" /></Link>
+                  <Link className="text-link text-link-light" href="/services">See what we do <ArrowDownRight size={18} aria-hidden="true" /></Link>
+                </div>
               </div>
-              <p className="hero-capabilities">STRATEGY <span /> DESIGN <span /> DEVELOPMENT <span /> AI</p>
-            </div>
-            <div className="hero-directory" aria-label="Choose a business">
-              <div className="directory-top"><span>EXPLORE OUR BUSINESSES</span><span>01 / 04</span></div>
-              <a href="https://easylinksim.com/" className="directory-row" target="_blank" rel="noopener noreferrer"><span className="directory-index">01</span><span><strong>Easylink eSIM</strong><small>Travel connectivity</small></span><MoveUpRight size={22} aria-hidden="true" /></a>
-              <Link href="/easylinkflex" className="directory-row"><span className="directory-index">02</span><span><strong>EasyLink Flex</strong><small>Flights, cruises, holidays and AI itineraries</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
-              <Link href="/easyproperties" className="directory-row"><span className="directory-index">03</span><span><strong>EasyProperties</strong><small>Property discovery</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
-              <Link href="/echat" className="directory-row"><span className="directory-index">04</span><span><strong>eChat</strong><small>AI reply and chat assistance · Coming soon</small></span><MoveUpRight size={22} aria-hidden="true" /></Link>
-              <div className="directory-bottom"><Link href="/businesses">MEET THE FAMILY <ArrowUpRight size={14} /></Link><span className="directory-asterisk" aria-hidden="true">✳</span></div>
             </div>
           </div>
-          <div className="hero-bottom container"><span>BUILT AROUND YOUR NEXT IDEA.</span><span>SCROLL TO EXPLORE <span aria-hidden="true">↓</span></span></div>
+          <div className="hero-business-band"><div className="container">
+            <div className="hero-business-heading"><span>01 / THE GROUP</span><p>Explore the businesses we are building</p><Link href="/businesses">View all businesses <ArrowUpRight size={15} aria-hidden="true" /></Link></div>
+            <nav className="hero-business-links" aria-label="EasyDesignTech businesses">
+              <a href="https://easylinksim.com/" target="_blank" rel="noopener noreferrer"><span>01 / CONNECTIVITY</span><strong>Easylink eSIM</strong><ArrowUpRight size={20} aria-hidden="true" /></a>
+              <Link href="/easylinkflex"><span>02 / TRAVEL</span><strong>EasyLink Flex</strong><ArrowUpRight size={20} aria-hidden="true" /></Link>
+              <Link href="/easyproperties"><span>03 / PROPERTY · COMING SOON</span><strong>EasyProperties</strong><ArrowUpRight size={20} aria-hidden="true" /></Link>
+              <Link href="/echat"><span>04 / AI · COMING SOON</span><strong>eChat</strong><ArrowUpRight size={20} aria-hidden="true" /></Link>
+            </nav>
+          </div></div>
         </section>
 
         <section className="services-section services-showcase" id="services" aria-labelledby="services-title">
