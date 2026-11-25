@@ -1,5 +1,6 @@
 import { env } from "cloudflare:workers";
 import { database } from "@/db/site-data";
+import { sendCustomerAcknowledgement, sendOwnerNotification } from "@/lib/email-notifications";
 
 const cookieName = "edt_chat";
 type Thread = { id: number; status: string; visitor_name: string; visitor_email: string };
@@ -81,19 +82,45 @@ export async function POST(request: Request) {
     const db = database();
     if (data.action === "contact") {
       const name = typeof data.name === "string" ? data.name.trim() : "";
-      const email = typeof data.email === "string" ? data.email.trim() : "";
+      const email = typeof data.email === "string" ? data.email.trim().toLowerCase() : "";
       if (thread.status !== "human" || name.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) return Response.json({ error: "Enter a valid email address" }, { status: 400 });
       await db.prepare("UPDATE chat_threads SET visitor_name = ?, visitor_email = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(name, email, thread.id).run();
+      if (name !== thread.visitor_name || email !== thread.visitor_email) {
+        const recent = await db.prepare("SELECT sender, body, created_at FROM chat_messages WHERE thread_id = ? ORDER BY id DESC LIMIT 12").bind(thread.id).all<ChatMessage>();
+        await Promise.all([sendOwnerNotification({
+          subject: `Chat contact details: conversation #${thread.id}`,
+          text: [
+            `A visitor left contact details for EasyDesignTech conversation #${thread.id}.`,
+            "",
+            `Name: ${name || "Not provided"}`,
+            `Email: ${email}`,
+            "",
+            "Recent conversation:",
+            ...(recent.results || []).reverse().map(item => `${item.sender.toUpperCase()} (${item.created_at}): ${item.body}`),
+            "",
+            `Open the private Studio to reply: ${new URL("/studio#chats", request.url)}`,
+            `Reply to this email to reach ${email}.`,
+          ].join("\n"),
+          replyTo: email,
+          idempotencyKey: `chat-contact-${thread.id}-${await hashToken(`${name}\0${email}`)}`,
+        }), ...(email !== thread.visitor_email ? [sendCustomerAcknowledgement({
+          to: email,
+          name,
+          kind: "chat",
+          idempotencyKey: `chat-ack-${thread.id}-${await hashToken(email)}`,
+        })] : [])]);
+      }
       return Response.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
     }
     const body = typeof data.body === "string" ? data.body.trim() : "";
     if (!body || body.length > 1000) return Response.json({ error: "Enter a message of up to 1000 characters" }, { status: 400 });
     const recent = await db.prepare("SELECT COUNT(*) AS total FROM chat_messages WHERE thread_id = ? AND sender = 'visitor' AND created_at >= datetime('now', '-1 minute')").bind(thread.id).first<{ total: number }>();
     if ((recent?.total || 0) >= 12) return Response.json({ error: "Please wait a moment before sending another message" }, { status: 429 });
-    await db.batch([
+    const saved = await db.batch([
       db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'visitor', ?)").bind(thread.id, body),
       db.prepare("UPDATE chat_threads SET updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(thread.id),
     ]);
+    const messageId = Number(saved[0].meta.last_row_id);
     if (thread.status === "assistant") {
       let reply = guidedReply(body);
       const key = modelKey();
@@ -103,6 +130,35 @@ export async function POST(request: Request) {
         db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'assistant', ?)").bind(thread.id, handoff),
         db.prepare("UPDATE chat_threads SET status = 'human', handoff_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(thread.id),
       ]);
+      await sendOwnerNotification({
+        subject: `New chat for your team: conversation #${thread.id}`,
+        text: [
+          `A website visitor has been passed to the EasyDesignTech team in conversation #${thread.id}.`,
+          "",
+          `Visitor: ${body}`,
+          `Assistant: ${reply}`,
+          "",
+          "The visitor can add their name and email in the chat after this handoff.",
+          `Open your private Studio to reply: ${new URL("/studio#chats", request.url)}`,
+        ].join("\n"),
+        idempotencyKey: `chat-handoff-${thread.id}`,
+      });
+    } else {
+      await sendOwnerNotification({
+        subject: `New chat message: conversation #${thread.id}`,
+        text: [
+          `New visitor message in EasyDesignTech conversation #${thread.id}.`,
+          "",
+          `Name: ${thread.visitor_name || "Not provided"}`,
+          `Email: ${thread.visitor_email || "Not provided"}`,
+          "",
+          body,
+          "",
+          `Open your private Studio to reply: ${new URL("/studio#chats", request.url)}`,
+        ].join("\n"),
+        ...(thread.visitor_email ? { replyTo: thread.visitor_email } : {}),
+        idempotencyKey: `chat-message-${messageId}`,
+      });
     }
     return Response.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {

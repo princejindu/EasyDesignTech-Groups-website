@@ -1,4 +1,5 @@
 import { database, isSiteOwner } from "@/db/site-data";
+import { sendSupportReply } from "@/lib/email-notifications";
 
 const denied = () => Response.json({ error: "Owner access required" }, { status: 403 });
 
@@ -27,13 +28,20 @@ export async function POST(request: Request) {
     const body = typeof data.body === "string" ? data.body.trim() : "";
     if (!Number.isSafeInteger(threadId) || threadId < 1 || !body || body.length > 1000) return Response.json({ error: "Check your reply" }, { status: 400 });
     const db = database();
-    const thread = await db.prepare("SELECT id FROM chat_threads WHERE id = ?").bind(threadId).first();
+    const thread = await db.prepare("SELECT id, visitor_name, visitor_email FROM chat_threads WHERE id = ?").bind(threadId).first<{ id: number; visitor_name: string; visitor_email: string }>();
     if (!thread) return Response.json({ error: "Conversation not found" }, { status: 404 });
-    await db.batch([
+    const saved = await db.batch([
       db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'support', ?)").bind(threadId, body),
       db.prepare("UPDATE chat_threads SET status = 'human', handoff_at = COALESCE(handoff_at, CURRENT_TIMESTAMP), updated_at = CURRENT_TIMESTAMP WHERE id = ?").bind(threadId),
     ]);
-    return Response.json({ ok: true });
+    const emailSent = thread.visitor_email ? await sendSupportReply({
+      to: thread.visitor_email,
+      name: thread.visitor_name,
+      body,
+      threadId,
+      messageId: Number(saved[0].meta.last_row_id),
+    }) : false;
+    return Response.json({ ok: true, emailSent, hasEmail: Boolean(thread.visitor_email) });
   } catch (error) {
     console.error("Studio chat reply failed", error);
     return Response.json({ error: "Could not send reply" }, { status: 503 });

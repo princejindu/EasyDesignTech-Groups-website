@@ -1,3 +1,4 @@
+import { env } from "cloudflare:workers";
 import { database, isSiteOwner, type Enquiry, type Review } from "@/db/site-data";
 import { isValidSocialUrl, mergeSocialLinks, socialPlatforms } from "@/db/social-links";
 
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
       db.prepare("SELECT value FROM site_settings WHERE key = 'satisfied_clients'").first<{ value: string }>(),
       db.prepare("SELECT key, value FROM site_settings WHERE key LIKE 'social_%'").all<{ key: string; value: string }>(),
     ]);
-    return Response.json({ enquiries: enquiries.results || [], reviews: reviews.results || [], satisfiedClients: count ? Number(count.value) : null, socialLinks: mergeSocialLinks(settings.results || []) }, { headers: { "Cache-Control": "no-store" } });
+    return Response.json({ enquiries: enquiries.results || [], reviews: reviews.results || [], satisfiedClients: count ? Number(count.value) : null, socialLinks: mergeSocialLinks(settings.results || []), emailNotificationsConfigured: Boolean((env as unknown as { RESEND_API_KEY?: string }).RESEND_API_KEY?.trim()) }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     console.error("Studio read failed", error);
     return Response.json({ error: "Inbox unavailable" }, { status: 503 });

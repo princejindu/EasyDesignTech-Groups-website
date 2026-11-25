@@ -22,6 +22,7 @@ export default function Studio() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [count, setCount] = useState("");
   const [socialLinks, setSocialLinks] = useState<Record<SocialPlatform, string>>(emptySocial);
+  const [emailConfigured, setEmailConfigured] = useState(false);
   const [threads, setThreads] = useState<Thread[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
@@ -43,10 +44,10 @@ export default function Studio() {
       const response = await fetch("/api/studio", { cache: "no-store" });
       if (response.status === 403) { setState("denied"); return; }
       if (!response.ok) throw new Error();
-      const data = await response.json() as { enquiries: Enquiry[]; reviews: Review[]; satisfiedClients: number | null; socialLinks: Record<SocialPlatform, string> };
+      const data = await response.json() as { enquiries: Enquiry[]; reviews: Review[]; satisfiedClients: number | null; socialLinks: Record<SocialPlatform, string>; emailNotificationsConfigured: boolean };
       setEnquiries(data.enquiries || []); setReviews(data.reviews || []);
       setCount(data.satisfiedClients === null ? "" : String(data.satisfiedClients));
-      setSocialLinks(data.socialLinks || emptySocial); setState("ready");
+      setSocialLinks(data.socialLinks || emptySocial); setEmailConfigured(Boolean(data.emailNotificationsConfigured)); setState("ready");
       void loadChat();
     } catch { setState("error"); }
   }, [loadChat]);
@@ -75,9 +76,9 @@ export default function Studio() {
     setSending(true); setNotice("");
     try {
       const response = await fetch("/api/studio/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ threadId: selected, body: reply }) });
-      const data = await response.json() as { error?: string };
+      const data = await response.json() as { error?: string; emailSent?: boolean; hasEmail?: boolean };
       if (!response.ok) throw new Error(data.error || "Could not send reply");
-      setReply(""); await loadChat(); setNotice("Reply sent");
+      setReply(""); await loadChat(); setNotice(data.emailSent ? "Reply saved in chat and emailed to the visitor." : data.hasEmail ? "Reply saved in chat. Email could not be sent, so please contact the visitor directly." : "Reply saved in chat. The visitor has not left an email address.");
     } catch (cause) { setNotice(cause instanceof Error ? cause.message : "Could not send reply"); }
     finally { setSending(false); }
   }
@@ -89,6 +90,7 @@ export default function Studio() {
     {state === "denied" && <div className="studio-message"><h2>Owner access required</h2><p>Sign in with the account that owns this website to manage enquiries, chats, social links and client stories.</p></div>}
     {state === "error" && <div className="studio-message"><h2>The studio is unavailable</h2><p>Try refreshing this page.</p></div>}
     {state === "ready" && <>
+      <div className="studio-email-status" role="status"><strong>Email notifications: {emailConfigured ? "Sending service configured" : "Setup needed"}</strong><p>{emailConfigured ? "New enquiries and chat handoffs are emailed to info@easydesigntech.com. Acknowledgements go to visitors who provide an email address. Check a test message to confirm delivery." : "Enquiries and chats are saved here. Email notifications and customer acknowledgements need a verified sending domain and a Resend API key in the Site secret settings."}</p></div>
       <div className="studio-summary"><div><span>NEW ENQUIRIES</span><strong>{enquiries.filter(item => item.status === "new").length}</strong></div><div><span>CHAT CONVERSATIONS</span><strong>{threads.length}</strong></div><div><span>OWNER CONFIRMED CLIENT TOTAL</span><strong>{count || "Not set"}</strong></div></div>
       <p className="studio-notice" aria-live="polite">{notice}</p>
       <section className="studio-section" id="chats"><div className="studio-section-top"><div><p>01 / LIVE CHAT</p><h2>Conversations</h2></div><span>New messages appear while this page is open</span></div>

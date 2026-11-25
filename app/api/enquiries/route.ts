@@ -1,5 +1,6 @@
 import { database } from "@/db/site-data";
 import { serviceForPackage } from "@/lib/quote";
+import { sendCustomerAcknowledgement, sendOwnerNotification } from "@/lib/email-notifications";
 
 const allowedInterests = new Set(["Web and apps", "Branding and design", "Social media and content", "AI automation and data", "Easylink eSIM", "EasyLink Flex", "EasyProperties", "eChat", "Something else"]);
 
@@ -31,7 +32,33 @@ export async function POST(request: Request) {
     const db = database();
     const recent = await db.prepare("SELECT id FROM enquiries WHERE email = ? AND created_at > datetime('now', '-2 minutes') LIMIT 1").bind(email).first();
     if (recent) return Response.json({ error: "Please wait a moment before sending another enquiry" }, { status: 429 });
-    await db.prepare("INSERT INTO enquiries (name, email, phone, interest, message) VALUES (?, ?, ?, ?, ?)").bind(name, email, phone, interest, storedMessage).run();
+    const saved = await db.prepare("INSERT INTO enquiries (name, email, phone, interest, message) VALUES (?, ?, ?, ?, ?)").bind(name, email, phone, interest, storedMessage).run();
+    const enquiryId = Number(saved.meta.last_row_id);
+    await Promise.all([sendOwnerNotification({
+      subject: `${quoteType === "tailored" ? "Quote request" : "New enquiry"}: ${interest}`,
+      text: [
+        `New EasyDesignTech website enquiry #${enquiryId}`,
+        "",
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Phone or WhatsApp: ${phone || "Not provided"}`,
+        `Service or business: ${interest}`,
+        `Request type: ${quoteType === "tailored" ? "Tailored quote" : "General enquiry"}`,
+        "",
+        "Message:",
+        storedMessage,
+        "",
+        `Review in your private Studio: ${new URL("/studio", request.url)}`,
+        `Reply to this email to contact ${email}.`,
+      ].join("\n"),
+      replyTo: email,
+      idempotencyKey: `enquiry-${enquiryId}`,
+    }), sendCustomerAcknowledgement({
+      to: email,
+      name,
+      kind: quoteType === "tailored" ? "quote" : "enquiry",
+      idempotencyKey: `enquiry-ack-${enquiryId}`,
+    })]);
     return Response.json({ ok: true });
   } catch (error) {
     console.error("Enquiry submission failed", error);
