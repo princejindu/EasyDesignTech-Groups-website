@@ -81,6 +81,7 @@ export function ChatWidget() {
   const [savedEmail, setSavedEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [startingNew, setStartingNew] = useState(false);
   const [savingContact, setSavingContact] = useState(false);
   const [error, setError] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
@@ -93,8 +94,8 @@ export function ChatWidget() {
       setStage(data.status || "assistant");
       setAiEnabled(Boolean(data.aiEnabled));
       setSavedEmail(data.visitorEmail || "");
-      if (data.visitorName) setName(data.visitorName);
-      if (data.visitorEmail) setEmail(data.visitorEmail);
+      setName(data.visitorName || "");
+      setEmail(data.visitorEmail || "");
       setError("");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Chat is unavailable"); }
     finally { setLoading(false); }
@@ -132,6 +133,18 @@ export function ChatWidget() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not send your message"); }
     finally { setSavingContact(false); }
   }
+  async function startNewConversation() {
+    if (startingNew) return;
+    setStartingNew(true); setError("");
+    try {
+      const response = await fetch("/api/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "new_conversation" }) });
+      const data = await response.json() as { error?: string };
+      if (!response.ok) throw new Error(data.error || "Could not open a new AI chat");
+      setDraft(""); setContactMessage("");
+      await load();
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not open a new AI chat"); }
+    finally { setStartingNew(false); }
+  }
   const firstQuestion = stage === "assistant" && aiEnabled && !messages.some(message => message.sender === "visitor");
   const needsContact = stage === "human" || (!loading && !aiEnabled);
   return <div className="chat-widget">
@@ -141,6 +154,7 @@ export function ChatWidget() {
         {loading && !messages.length ? <p className="chat-empty">Opening your conversation…</p> : messages.length ? messages.map(message => <div key={message.id} className={`chat-line ${message.sender === "visitor" ? "from-visitor" : "from-team"}`}>{message.sender === "assistant" && <Image className="chat-line-avatar" src="/support-agent.webp" alt="" width={28} height={28} />}<div className={`chat-bubble chat-bubble-${message.sender}`}><small>{message.sender === "assistant" ? "VIRTUAL ASSISTANT" : message.sender === "support" ? "HUMAN SUPPORT" : "YOU"}</small><p>{message.body}</p><time>{message.created_at}</time></div></div>) : <div className="chat-welcome"><MessageCircle size={26} /><strong>Your conversation starts here.</strong><p>Tell us what you need. The team can reply in this chat.</p></div>}
         {firstQuestion && !loading && <div className="chat-prompts" aria-label="Common topics"><span>WHAT CAN WE HELP WITH?</span>{["Easylink eSIM", "Websites and apps", "EasyLink Flex travel", "eChat coming soon"].map(topic => <button key={topic} type="button" disabled={sending} onClick={() => void sendMessage(`I’d like help with ${topic}.`)}>{topic} <ArrowUpRight size={13} /></button>)}</div>}
         {needsContact && <div className="chat-handoff"><strong>Contact our team</strong><p>Use the form below for a personal reply. Your form details are handled separately from the AI chat.</p></div>}
+        {stage === "human" && aiEnabled && <div className="chat-restart"><strong>Have another question?</strong><p>Your previous enquiry stays with our team. You can start a fresh AI conversation about our services.</p><button type="button" onClick={() => void startNewConversation()} disabled={startingNew || loading}>{startingNew ? "Opening AI chat…" : "Start a new AI chat"}</button><p className="chat-error" aria-live="polite">{error}</p></div>}
         <div ref={endRef} />
       </div>
       {needsContact && !savedEmail && <form className="chat-contact" onSubmit={saveContact}><strong>Send your enquiry</strong><div className="chat-contact-fields"><label htmlFor="chat-name">Your name</label><input id="chat-name" name="name" autoComplete="name" value={name} onChange={event => setName(event.target.value)} minLength={2} maxLength={100} required placeholder="Your name" /><label htmlFor="chat-email">Email address</label><input id="chat-email" name="email" type="email" autoComplete="email" value={email} onChange={event => setEmail(event.target.value)} required maxLength={254} placeholder="you@example.com" /><label htmlFor="chat-contact-message">Your message</label><textarea id="chat-contact-message" name="message" value={contactMessage} onChange={event => setContactMessage(event.target.value)} required minLength={10} maxLength={2000} rows={3} placeholder="Tell our team what you need" /></div><label className="chat-contact-consent"><input type="checkbox" name="consent" required /> Use my details to confirm and respond to this enquiry.</label><label className="honeypot" aria-hidden="true">Leave blank<input name="website" tabIndex={-1} autoComplete="off" /></label><button type="submit" disabled={savingContact}>{savingContact ? "Sending…" : "Send to the team"}</button><p className="chat-error" aria-live="polite">{error}</p></form>}

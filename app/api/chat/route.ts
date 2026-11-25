@@ -55,6 +55,17 @@ export async function POST(request: Request) {
     const data = await request.json() as { action?: unknown; body?: unknown; name?: unknown; email?: unknown; message?: unknown; consent?: unknown; website?: unknown };
     if (data.website) return Response.json({ ok: true });
     const db = database();
+    if (data.action === "new_conversation") {
+      if (thread.status !== "human" || !geminiKey()) return Response.json({ error: "A new AI chat is not available right now" }, { status: 409 });
+      // A separate thread keeps contact form details and the previous support enquiry
+      // out of the next Gemini conversation, while preserving it for the team.
+      const token = Array.from(crypto.getRandomValues(new Uint8Array(32)), byte => byte.toString(16).padStart(2, "0")).join("");
+      const created = await db.prepare("INSERT INTO chat_threads (token_hash) VALUES (?)").bind(await hashToken(token)).run();
+      await db.prepare("INSERT INTO chat_messages (thread_id, sender, body) VALUES (?, 'assistant', ?)").bind(Number(created.meta.last_row_id), greeting).run();
+      const headers = new Headers({ "Cache-Control": "no-store" });
+      headers.set("Set-Cookie", `${cookieName}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000${new URL(request.url).protocol === "https:" ? "; Secure" : ""}`);
+      return Response.json({ ok: true }, { headers });
+    }
     if (data.action === "contact") {
       const name = typeof data.name === "string" ? data.name.trim() : "";
       const email = typeof data.email === "string" ? data.email.trim().toLowerCase() : "";

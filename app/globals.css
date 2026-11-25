@@ -453,6 +453,11 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
 .chat-handoff { background: #e6efe4; border-left: 3px solid #40836a; padding: 11px 14px; font-size: 12px; }
 .chat-handoff strong { color: #295b45; }
 .chat-handoff p { color: #49645a; line-height: 1.4; margin: 4px 0 0; }
+.chat-restart { margin-left: 35px; padding: 13px 14px; background: #f5f9ed; border: 1px solid #c6d9b4; color: #234639; font-size: 12px; }
+.chat-restart strong { font-size: 13px; }
+.chat-restart p { line-height: 1.4; margin: 5px 0 10px; }
+.chat-restart button { border: 0; background: #d7fb66; color: #173e31; padding: 9px 12px; font-weight: 800; cursor: pointer; }
+.chat-restart button:disabled { opacity: .6; cursor: wait; }
 .chat-contact { background: #ebf2e9; padding: 12px 17px; border-top: 1px solid #cad5c9; max-height: 58%; overflow-y: auto; flex: none; }
 .chat-contact strong { display: block; margin-bottom: 9px; font-size: 14px; color: #214a3d; }
 .chat-contact label { display: block; font-size: 11px; font-weight: 800; color: #395d50; margin: 0; }
