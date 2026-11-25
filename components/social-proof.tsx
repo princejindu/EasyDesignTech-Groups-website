@@ -1,10 +1,11 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { ArrowUpRight, CheckCircle2, Pause, Play, Quote, Star } from "lucide-react";
+import { ArrowUpRight, Pause, Play, Quote, Star } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { googleReviews, googleReviewSnapshot } from "@/lib/google-reviews";
 
-type Review = { id: number; name: string; context: string; quote: string };
+type Review = { id: number; name: string; context: string; quote: string; source: "google" | "client"; excerpt: boolean };
 
 function Count({ value }: { value: number }) {
   const element = useRef<HTMLSpanElement>(null);
@@ -40,8 +41,7 @@ function ReviewDialog() {
 }
 
 export function SocialProof() {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [reviewCount, setReviewCount] = useState<number | null>(null);
+  const [reviews, setReviews] = useState<Review[]>(googleReviews);
   const [count, setCount] = useState<number | null>(null);
   const [paused, setPaused] = useState(false);
   useEffect(() => {
@@ -50,10 +50,9 @@ export function SocialProof() {
       try {
         const response = await fetch("/api/social-proof", { cache: "no-store" });
         if (!response.ok) return;
-        const data = await response.json() as { reviews: Review[]; approvedReviews: number; satisfiedClients: number | null };
+        const data = await response.json() as { reviews: Review[]; satisfiedClients: number | null };
         if (!active) return;
         setReviews(Array.isArray(data.reviews) ? data.reviews : []);
-        setReviewCount(Number.isSafeInteger(data.approvedReviews) && data.approvedReviews >= 0 ? data.approvedReviews : null);
         setCount(Number.isSafeInteger(data.satisfiedClients) && data.satisfiedClients !== null && data.satisfiedClients >= 0 ? data.satisfiedClients : null);
       } catch { /* Keep the last known figures if the connection is interrupted. */ }
     }
@@ -68,24 +67,25 @@ export function SocialProof() {
   // Repeat short sets within each half so the loop has no blank area on wide screens.
   const loopReviews = visibleReviews.length ? Array.from({ length: Math.max(1, Math.ceil(4 / visibleReviews.length)) }, () => visibleReviews).flat() : [];
   const cards = (copy: string) => loopReviews.map((review, index) => <article className="review-card" key={`${copy}-${index}-${review.id}`}>
-    <div className="review-card-top"><Quote size={25} strokeWidth={1.4} aria-hidden="true" /><span><CheckCircle2 size={15} aria-hidden="true" /> APPROVED CLIENT REVIEW</span></div>
-    <blockquote>“{review.quote}”</blockquote>
+    <div className="review-card-top"><Quote size={25} strokeWidth={1.4} aria-hidden="true" /><span>{review.source === "google" ? review.excerpt ? "GOOGLE REVIEW EXCERPT" : "GOOGLE REVIEW" : "APPROVED CLIENT REVIEW"}</span></div>
+    <blockquote>“{review.quote}{review.excerpt ? "…" : ""}”</blockquote>
     <div className="review-card-person"><strong>{review.name}</strong>{review.context && <span>{review.context}</span>}</div>
   </article>);
 
   return <section className="proof-section" id="reviews" aria-labelledby="proof-title">
     <div className="container">
-      <div className="proof-heading"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> CLIENT VOICES</p><h2 id="proof-title">Words from people<br /><em>we have worked with.</em></h2></div><p className="proof-intro">We share client feedback only when we have the actual words and permission to publish them.</p>
+      <div className="proof-heading"><div><p className="eyebrow dark-eyebrow"><span className="eyebrow-line" /> EASYDESIGNUK / GOOGLE REVIEWS</p><h2 id="proof-title">Real feedback.<br /><em>In their words.</em></h2></div><p className="proof-intro">Selected words from the EasyDesignUK Google listing. Excerpts are marked where the supplied screenshots cut off the rest of a review. <a href="https://share.google/nKdlLm2tVoM1Ajir5" target="_blank" rel="noopener noreferrer">View the Google listing <ArrowUpRight size={15} aria-hidden="true" /></a></p>
       </div>
-      <div className="proof-stats" aria-label="Client feedback figures">
-        <div className="proof-stat"><span className="proof-stat-index">01 / PUBLISHED REVIEWS</span><strong>{reviewCount === null ? "—" : <Count value={reviewCount} />}</strong><span>Approved feedback on this website</span></div>
-        <div className="proof-stat proof-stat-accent"><span className="proof-stat-index">02 / CLIENTS SERVED</span><strong>{count === null ? "—" : <Count value={count} />}</strong><span>{count === null ? "Owner confirmed total pending" : "Total confirmed by the team"}</span></div>
+      <div className="proof-stats" aria-label="EasyDesignUK Google review snapshot">
+        <div className="proof-stat"><span className="proof-stat-index">01 / GOOGLE RATING</span><strong>{googleReviewSnapshot.rating.toFixed(1)}</strong><span>Rating shown in the supplied screenshot</span></div>
+        <div className="proof-stat proof-stat-accent"><span className="proof-stat-index">02 / GOOGLE REVIEWS</span><strong><Count value={googleReviewSnapshot.total} /></strong><span>Listing snapshot from {googleReviewSnapshot.capturedOn}</span></div>
+        <div className="proof-stat"><span className="proof-stat-index">03 / {count === null ? "STORIES ON DISPLAY" : "CLIENTS SERVED"}</span><strong><Count value={count === null ? visibleReviews.length : count} /></strong><span>{count === null ? `${googleReviews.length} Google reviews supplied${visibleReviews.length > googleReviews.length ? " plus client stories" : ""}` : "Total confirmed by the team"}</span></div>
       </div>
-      {visibleReviews.length ? <><div className="review-marquee-top"><span><span className="live-dot" /> APPROVED CLIENT STORIES</span><button type="button" onClick={() => setPaused(value => !value)} aria-label={paused ? "Play review movement" : "Pause review movement"}>{paused ? <Play size={16} /> : <Pause size={16} />}{paused ? "Play" : "Pause"}</button></div>
-        <div className={`review-marquee${paused ? " is-paused" : ""}`} aria-label="Approved client reviews scrolling from right to left">
+      {visibleReviews.length ? <><div className="review-marquee-top"><span><span className="live-dot" /> GOOGLE REVIEWS AND CLIENT STORIES</span><button type="button" onClick={() => setPaused(value => !value)} aria-label={paused ? "Play review movement" : "Pause review movement"}>{paused ? <Play size={16} /> : <Pause size={16} />}{paused ? "Play" : "Pause"}</button></div>
+        <div className={`review-marquee${paused ? " is-paused" : ""}`} aria-label="Google reviews and approved client feedback scrolling from right to left">
           <div className="review-motion"><div className="review-group">{cards("first")}</div><div className="review-group" aria-hidden="true">{cards("second")}</div></div>
         </div></> : <div className="proof-empty"><span className="proof-star" aria-hidden="true">✳</span><p>Client stories will appear here when the original feedback has been checked and approved for publication.</p></div>}
-        <div className="proof-bottom"><span>REAL FEEDBACK ONLY</span><ReviewDialog /></div>
+        <div className="proof-bottom"><span>{googleReviews.length} READABLE GOOGLE REVIEWS FROM AN {googleReviewSnapshot.total} REVIEW SNAPSHOT</span><ReviewDialog /></div>
     </div>
   </section>;
 }

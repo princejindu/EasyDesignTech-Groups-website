@@ -318,6 +318,7 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
 .proof-heading h2 { font-size: clamp(49px,5.4vw,82px); line-height: 1; letter-spacing: -.07em; margin: 22px 0 0; }
 .proof-heading h2 em { color: #647c78; }
 .proof-intro { max-width: 330px; color: #536b60; font-size: 17px; line-height: 1.55; margin: 0 0 6px; }
+.proof-intro a { display: inline-flex; align-items: center; color: #142237; border-bottom: 1px solid currentColor; font-weight: 700; }
 .proof-stats { width: 100%; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 45px; }
 .proof-stat { min-height: 183px; padding: 18px 20px; background: #142237; color: #fff; display: flex; flex-direction: column; align-items: flex-start; }
 .proof-stat-accent { background: #d7fb66; color: #101420; }
